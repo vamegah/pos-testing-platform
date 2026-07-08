@@ -1,0 +1,3 @@
+# simulators/pos-services/pricing/requirements.txt
+
+Flask==2.3.3

@@ -1,0 +1,80 @@
+# k8s/namespaces.yaml
+# Kubernetes Namespaces for POS Test Environment
+#
+# This file defines the namespaces used in the POS Cloud-Native
+# & Hardware Test Platform. Each namespace serves a specific purpose
+# in the test environment.
+#
+# Usage:
+#   kubectl apply -f k8s/namespaces.yaml
+#
+# Verification:
+#   kubectl get namespaces
+#   kubectl describe namespace pos-test
+#   kubectl describe namespace pos-monitoring
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pos-test
+  labels:
+    name: pos-test
+    environment: test
+    app: pos-platform
+    purpose: pos-services
+  annotations:
+    description: "Primary namespace for POS services under test"
+    owner: "POS Test Engineering Team"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pos-monitoring
+  labels:
+    name: pos-monitoring
+    environment: test
+    app: pos-platform
+    purpose: monitoring
+  annotations:
+    description: "Namespace for monitoring stack (Prometheus, Grafana, etc.)"
+    owner: "POS Test Engineering Team"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pos-load-test
+  labels:
+    name: pos-load-test
+    environment: test
+    app: pos-platform
+    purpose: load-testing
+  annotations:
+    description: "Namespace for load test workers and performance testing"
+    owner: "POS Test Engineering Team"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pos-peripheral-sim
+  labels:
+    name: pos-peripheral-sim
+    environment: test
+    app: pos-platform
+    purpose: peripheral-simulation
+  annotations:
+    description: "Namespace for hardware peripheral simulators (scanner, printer, etc.)"
+    owner: "POS Test Engineering Team"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pos-ci-cd
+  labels:
+    name: pos-ci-cd
+    environment: test
+    app: pos-platform
+    purpose: ci-cd
+  annotations:
+    description: "Namespace for CI/CD pipeline tools (Jenkins, etc.)"
+    owner: "POS Test Engineering Team"

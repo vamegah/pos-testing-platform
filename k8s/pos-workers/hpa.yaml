@@ -1,0 +1,69 @@
+# k8s/pos-workers/hpa.yaml
+# HorizontalPodAutoscaler for POS Worker Deployment
+#
+# This defines autoscaling for the virtual POS worker pods based on
+# CPU utilization. In a real environment, this would be configured
+# with custom metrics from Prometheus.
+#
+# Usage:
+#   kubectl apply -f k8s/pos-workers/hpa.yaml
+#
+# Verification:
+#   kubectl get hpa -n pos-load-test
+#   kubectl describe hpa pos-worker-hpa -n pos-load-test
+#   kubectl get events -n pos-load-test --field-selector reason=SuccessfulRescale
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pos-worker-hpa
+  namespace: pos-load-test
+  labels:
+    app: pos-worker
+    component: load-generator
+    environment: test
+  annotations:
+    description: "HPA for virtual POS worker pods"
+    owner: "POS Test Engineering Team"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pos-worker
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 30
+      - type: Pods
+        value: 1
+        periodSeconds: 30
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 15
+      selectPolicy: Max

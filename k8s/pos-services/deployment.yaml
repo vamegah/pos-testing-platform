@@ -1,0 +1,246 @@
+# k8s/pos-services/deployment.yaml
+# Kubernetes Deployments for POS Services
+#
+# This file defines the Deployments for all four Phase-1 services:
+#   - pricing-service
+#   - promotions-service
+#   - tax-service
+#   - payment-gateway
+#
+# Each service runs as a separate Deployment with resource limits.
+#
+# Usage:
+#   kubectl apply -f k8s/pos-services/deployment.yaml
+#
+# Verification:
+#   kubectl get deployments -n pos-test
+#   kubectl get pods -n pos-test
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing-service
+  namespace: pos-test
+  labels:
+    app: pricing-service
+    component: pos-backend
+    environment: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pricing-service
+  template:
+    metadata:
+      labels:
+        app: pricing-service
+        component: pos-backend
+        environment: test
+    spec:
+      containers:
+      - name: pricing-service
+        image: pricing-service:latest  # Replace with your registry: toshiba/pricing-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+          name: http
+        env:
+        - name: PORT
+          value: "8081"
+        - name: DEBUG
+          value: "false"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: promotions-service
+  namespace: pos-test
+  labels:
+    app: promotions-service
+    component: pos-backend
+    environment: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: promotions-service
+  template:
+    metadata:
+      labels:
+        app: promotions-service
+        component: pos-backend
+        environment: test
+    spec:
+      containers:
+      - name: promotions-service
+        image: promotions-service:latest  # Replace with your registry
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+          name: http
+        env:
+        - name: PORT
+          value: "8082"
+        - name: DEBUG
+          value: "false"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tax-service
+  namespace: pos-test
+  labels:
+    app: tax-service
+    component: pos-backend
+    environment: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tax-service
+  template:
+    metadata:
+      labels:
+        app: tax-service
+        component: pos-backend
+        environment: test
+    spec:
+      containers:
+      - name: tax-service
+        image: tax-service:latest  # Replace with your registry
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+          name: http
+        env:
+        - name: PORT
+          value: "8083"
+        - name: DEBUG
+          value: "false"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8083
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8083
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-gateway
+  namespace: pos-test
+  labels:
+    app: payment-gateway
+    component: pos-backend
+    environment: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-gateway
+  template:
+    metadata:
+      labels:
+        app: payment-gateway
+        component: pos-backend
+        environment: test
+    spec:
+      containers:
+      - name: payment-gateway
+        image: payment-gateway:latest  # Replace with your registry
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8084
+          name: http
+        env:
+        - name: PORT
+          value: "8084"
+        - name: DEBUG
+          value: "false"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8084
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8084
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

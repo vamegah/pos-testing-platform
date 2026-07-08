@@ -1,0 +1,121 @@
+# docker-compose.yml
+# POS Cloud-Native & Hardware Test Platform - Local Development Environment
+# Wires together all four mock POS services on a local bridge network.
+
+version: '3.8'
+
+services:
+  # ============================================
+  # Pricing Service - Returns price for SKU
+  # ============================================
+  pricing-service:
+    build:
+      context: ./simulators/pos-services/pricing
+      dockerfile: Dockerfile
+    container_name: pricing-service
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    labels:
+      - "service.name=pricing-service"
+      - "service.port=8081"
+
+  # ============================================
+  # Promotions Service - Returns applicable discounts
+  # ============================================
+  promotions-service:
+    build:
+      context: ./simulators/pos-services/promotions
+      dockerfile: Dockerfile
+    container_name: promotions-service
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    labels:
+      - "service.name=promotions-service"
+      - "service.port=8082"
+
+  # ============================================
+  # Tax Service - Returns tax for subtotal+region
+  # ============================================
+  tax-service:
+    build:
+      context: ./simulators/pos-services/tax
+      dockerfile: Dockerfile
+    container_name: tax-service
+    ports:
+      - "8083:8083"
+    environment:
+      - PORT=8083
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    labels:
+      - "service.name=tax-service"
+      - "service.port=8083"
+
+  # ============================================
+  # Mock Payment Gateway - Approve/Decline based on test card sentinels
+  # ============================================
+  payment-gateway:
+    build:
+      context: ./simulators/pos-services/payment
+      dockerfile: Dockerfile
+    container_name: payment-gateway
+    ports:
+      - "8084:8084"
+    environment:
+      - PORT=8084
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    labels:
+      - "service.name=payment-gateway"
+      - "service.port=8084"
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  pos-network:
+    name: pos-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

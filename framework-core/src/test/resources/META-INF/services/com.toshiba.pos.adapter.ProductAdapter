@@ -1,0 +1,11 @@
+<!-- framework-core/src/test/resources/META-INF/services/com.toshiba.pos.adapter.ProductAdapter -->
+<!-- Service loader file for automatic adapter discovery -->
+com.toshiba.pos.adapter.elera.EleraAdapter
+com.toshiba.pos.adapter.mxp.MxpVisionKioskAdapter
+com.toshiba.pos.adapter.mxp.MxpSmartHybridAdapter
+com.toshiba.pos.adapter.mxp.MxpSmartWallAdapter
+com.toshiba.pos.adapter.mxp.MxpSmartWingAdapter
+com.toshiba.pos.adapter.scs.SelfCheckoutSystem7Adapter
+com.toshiba.pos.adapter.tcx.TcxDisplayAdapter
+com.toshiba.pos.adapter.tcx.TcxPrinterSingleAdapter
+com.toshiba.pos.adapter.tcx.TcxPrinterDualAdapter

@@ -1,0 +1,86 @@
+# k8s/pos-workers/deployment.yaml
+# Kubernetes Deployment for Virtual POS Workers
+#
+# This defines the load-generator worker pods for performance testing.
+# Replicas are set to 3 for local testing (configurable via env).
+#
+# Usage:
+#   kubectl apply -f k8s/pos-workers/deployment.yaml
+#
+# Verification:
+#   kubectl get deployments -n pos-load-test
+#   kubectl get pods -n pos-load-test
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pos-worker
+  namespace: pos-load-test
+  labels:
+    app: pos-worker
+    component: load-generator
+    environment: test
+  annotations:
+    description: "Virtual POS worker for load testing"
+spec:
+  replicas: 3  # Small for local testing; scale via kustomize/env
+  selector:
+    matchLabels:
+      app: pos-worker
+  template:
+    metadata:
+      labels:
+        app: pos-worker
+        component: load-generator
+        environment: test
+    spec:
+      containers:
+      - name: pos-worker
+        image: pos-worker:latest  # Replace with your registry
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: WORKER_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: TRANSACTION_RATE
+          value: "1.0"  # Transactions per second
+        - name: OFFLINE_MODE
+          value: "false"
+        - name: PRICING_SERVICE_URL
+          value: "http://pricing-service.pos-test.svc.cluster.local:8081"
+        - name: PROMOTIONS_SERVICE_URL
+          value: "http://promotions-service.pos-test.svc.cluster.local:8082"
+        - name: TAX_SERVICE_URL
+          value: "http://tax-service.pos-test.svc.cluster.local:8083"
+        - name: PAYMENT_GATEWAY_URL
+          value: "http://payment-gateway.pos-test.svc.cluster.local:8084"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pos-worker
+  namespace: pos-load-test
+  labels:
+    app: pos-worker
+    component: load-generator
+    environment: test
+  annotations:
+    description: "Service for pos-worker (optional)"
+spec:
+  type: ClusterIP
+  selector:
+    app: pos-worker
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http

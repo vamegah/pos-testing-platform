@@ -1,0 +1,102 @@
+# k8s/pos-services/service.yaml
+# Kubernetes Services for POS Services
+#
+# This file defines the Services for all four Phase-1 services:
+#   - pricing-service (ClusterIP, port 8081)
+#   - promotions-service (ClusterIP, port 8082)
+#   - tax-service (ClusterIP, port 8083)
+#   - payment-gateway (ClusterIP, port 8084)
+#
+# Each service is exposed as a ClusterIP for internal cluster communication.
+# For external access, use port-forwarding or an Ingress.
+#
+# Usage:
+#   kubectl apply -f k8s/pos-services/service.yaml
+#
+# Verification:
+#   kubectl get services -n pos-test
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing-service
+  namespace: pos-test
+  labels:
+    app: pricing-service
+    component: pos-backend
+    environment: test
+  annotations:
+    description: "Pricing service for SKU price lookups"
+spec:
+  type: ClusterIP
+  selector:
+    app: pricing-service
+  ports:
+  - port: 8081
+    targetPort: 8081
+    protocol: TCP
+    name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: promotions-service
+  namespace: pos-test
+  labels:
+    app: promotions-service
+    component: pos-backend
+    environment: test
+  annotations:
+    description: "Promotions service for discount lookups"
+spec:
+  type: ClusterIP
+  selector:
+    app: promotions-service
+  ports:
+  - port: 8082
+    targetPort: 8082
+    protocol: TCP
+    name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tax-service
+  namespace: pos-test
+  labels:
+    app: tax-service
+    component: pos-backend
+    environment: test
+  annotations:
+    description: "Tax service for tax calculations"
+spec:
+  type: ClusterIP
+  selector:
+    app: tax-service
+  ports:
+  - port: 8083
+    targetPort: 8083
+    protocol: TCP
+    name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-gateway
+  namespace: pos-test
+  labels:
+    app: payment-gateway
+    component: pos-backend
+    environment: test
+  annotations:
+    description: "Mock payment gateway for transaction authorization"
+spec:
+  type: ClusterIP
+  selector:
+    app: payment-gateway
+  ports:
+  - port: 8084
+    targetPort: 8084
+    protocol: TCP
+    name: http

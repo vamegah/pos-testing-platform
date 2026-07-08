@@ -1,0 +1,11 @@
+# simulators/pos-services/tax/docker-compose.override.yml
+# (Optional local override for testing this service in isolation)
+
+services:
+  tax-service:
+    build: .
+    ports:
+      - "8083:8083"
+    environment:
+      - PORT=8083
+      - DEBUG=true

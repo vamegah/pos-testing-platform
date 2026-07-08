@@ -1,0 +1,62 @@
+# ci-cd/Dockerfile.test
+# Container for running POS test automation headlessly
+# Includes Chrome for UI tests
+
+# Stage 1: Builder - Compile and package tests
+FROM maven:3.9-eclipse-temurin-11-alpine AS builder
+
+WORKDIR /build
+
+# Copy only pom.xml first to leverage Docker layer caching
+COPY test-automation/pom.xml .
+RUN mvn dependency:go-offline -q
+
+# Copy source code and build
+COPY test-automation/src ./src
+RUN mvn compile test-compile -q
+
+# Stage 2: Runtime - Lightweight container for executing tests
+FROM maven:3.9-eclipse-temurin-11-alpine
+
+WORKDIR /app
+
+# Install curl for health checks and Chrome for UI tests
+RUN apk add --no-cache curl \
+    && apk add --no-cache chromium chromium-chromedriver \
+    && apk add --no-cache xvfb-run \
+    && apk add --no-cache procps
+
+# Set Chrome environment variables
+ENV CHROME_BIN=/usr/bin/chromium-browser \
+    CHROME_DRIVER=/usr/lib/chromium/chromedriver \
+    DISPLAY=:99
+
+# Copy built classes and dependencies from builder
+COPY --from=builder /build/target/classes ./target/classes
+COPY --from=builder /build/target/test-classes ./target/test-classes
+COPY --from=builder /root/.m2 /root/.m2
+
+# Copy test configuration
+COPY test-automation/src/test/resources ./src/test/resources
+
+# Copy UI harness and scripts
+COPY simulators/kiosk-ui-harness /app/simulators/kiosk-ui-harness
+COPY scripts/serve_ui_harness.sh /usr/local/bin/serve_ui_harness.sh
+RUN chmod +x /usr/local/bin/serve_ui_harness.sh
+
+# Copy test runner script
+COPY ci-cd/run-tests.sh /usr/local/bin/run-tests.sh
+RUN chmod +x /usr/local/bin/run-tests.sh
+
+# Environment variables
+ENV PRICING_SERVICE_URL=http://pricing-service:8081
+ENV PROMOTIONS_SERVICE_URL=http://promotions-service:8082
+ENV TAX_SERVICE_URL=http://tax-service:8083
+ENV PAYMENT_GATEWAY_URL=http://payment-gateway:8084
+ENV KIOSK_UI_URL=http://localhost:8080
+ENV ENVIRONMENT=test
+ENV LOG_LEVEL=INFO
+ENV TEST_GROUPS=api
+
+# Default command
+CMD ["/usr/local/bin/run-tests.sh"]

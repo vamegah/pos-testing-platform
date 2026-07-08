@@ -1,0 +1,140 @@
+# monitoring/alerts/transaction_sla.yaml
+# Prometheus Alert Rules - Transaction SLA Monitoring
+#
+# These alerts monitor transaction performance and success rates
+# to ensure SLAs are being met.
+#
+# Usage:
+#   Prometheus configuration should include this file in the rule_files section
+#
+#   rule_files:
+#     - "alerts/transaction_sla.yaml"
+#     - "alerts/service_health.yaml"
+
+groups:
+  - name: transaction_sla_alerts
+    interval: 30s
+    rules:
+      # Alert: High transaction error rate
+      - alert: HighTransactionErrorRate
+        expr: |
+          (
+            sum(rate(pos_errors_total{job="pos-services"}[5m])) by (app)
+            /
+            sum(rate(pos_requests_total{job="pos-services"}[5m])) by (app)
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "High transaction error rate on {{ $labels.app }}"
+          description: |
+            Transaction error rate on {{ $labels.app }} is {{ printf "%.2f" $value }}% (threshold: 5%)
+            This indicates that more than 5% of transactions are failing.
+            Please check service logs and health status.
+
+      # Alert: Critical transaction error rate
+      - alert: CriticalTransactionErrorRate
+        expr: |
+          (
+            sum(rate(pos_errors_total{job="pos-services"}[5m])) by (app)
+            /
+            sum(rate(pos_requests_total{job="pos-services"}[5m])) by (app)
+          ) * 100 > 15
+        for: 1m
+        labels:
+          severity: critical
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "CRITICAL: High transaction error rate on {{ $labels.app }}"
+          description: |
+            Transaction error rate on {{ $labels.app }} is {{ printf "%.2f" $value }}% (threshold: 15%)
+            This is a critical issue requiring immediate investigation.
+            PagerDuty escalation triggered.
+
+      # Alert: High transaction latency (p95)
+      - alert: HighTransactionLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(pos_transaction_latency_bucket{job="pos-services"}[5m])) by (le, app)) > 500
+        for: 3m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "High transaction latency on {{ $labels.app }}"
+          description: |
+            95th percentile transaction latency on {{ $labels.app }} is {{ printf "%.0f" $value }}ms (threshold: 500ms)
+            This indicates performance degradation.
+            Consider scaling or investigating bottlenecks.
+
+      # Alert: Critical transaction latency (p95)
+      - alert: CriticalTransactionLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(pos_transaction_latency_bucket{job="pos-services"}[5m])) by (le, app)) > 1000
+        for: 2m
+        labels:
+          severity: critical
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "CRITICAL: High transaction latency on {{ $labels.app }}"
+          description: |
+            95th percentile transaction latency on {{ $labels.app }} is {{ printf "%.0f" $value }}ms (threshold: 1000ms)
+            Users are experiencing severe delays.
+            Immediate action required.
+
+      # Alert: Low transaction volume (potential outage)
+      - alert: LowTransactionVolume
+        expr: |
+          sum(rate(pos_transactions_total{job="pos-services"}[5m])) by (app) < 1
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "Low transaction volume on {{ $labels.app }}"
+          description: |
+            Transaction volume on {{ $labels.app }} is {{ printf "%.2f" $value }} transactions/second.
+            This is below the expected baseline (1 tps).
+            This may indicate a service outage or network issue.
+
+      # Alert: Offline queue size growing
+      - alert: OfflineQueueGrowing
+        expr: |
+          pos_offline_queue_size{job="pos-services"} > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "Offline queue is growing on {{ $labels.app }}"
+          description: |
+            Offline queue size on {{ $labels.app }} is {{ printf "%.0f" $value }} items.
+            This indicates that the store-and-forward queue is not being processed.
+            Network connectivity may be restored but sync is failing.
+
+      # Alert: Transaction success rate below SLA
+      - alert: TransactionSuccessRateBelowSLA
+        expr: |
+          (
+            sum(rate(pos_transactions_total{status="success", job="pos-services"}[5m])) by (app)
+            /
+            sum(rate(pos_transactions_total{job="pos-services"}[5m])) by (app)
+          ) * 100 < 99.5
+        for: 3m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "Transaction success rate below SLA on {{ $labels.app }}"
+          description: |
+            Transaction success rate on {{ $labels.app }} is {{ printf "%.2f" $value }}% (SLA: 99.5%)
+            This indicates that transactions are failing more than allowed by SLA.
+            Investigation required to identify root cause.

@@ -1,0 +1,198 @@
+# ============================================
+# POS Cloud-Native & Hardware Test Platform
+# .gitignore — exclude secrets, build artifacts, and local configs
+# ============================================
+
+# ----------------------
+# Environment & Secrets
+# ----------------------
+.env
+.env.*
+!.env.template
+*.secret
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+secrets/
+credentials/
+*.kubeconfig
+kubeconfig
+config.local
+
+# ----------------------
+# Java / Maven
+# ----------------------
+test-automation/target/
+test-automation/pom.xml.tag
+test-automation/pom.xml.releaseBackup
+test-automation/pom.xml.versionsBackup
+test-automation/pom.xml.next
+test-automation/release.properties
+test-automation/dependency-reduced-pom.xml
+test-automation/buildNumber.properties
+test-automation/.mvn/timing.properties
+test-automation/.mvn/wrapper/maven-wrapper.jar
+
+# ----------------------
+# IDE / Editor
+# ----------------------
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.classpath
+.project
+.settings/
+*.code-workspace
+
+# ----------------------
+# Python
+# ----------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# ----------------------
+# Terraform (IaC)
+# ----------------------
+infrastructure/terraform/**/.terraform/
+infrastructure/terraform/**/.terraform.lock.hcl
+infrastructure/terraform/**/*.tfstate
+infrastructure/terraform/**/*.tfstate.*
+infrastructure/terraform/**/*.tfvars
+infrastructure/terraform/**/*.tfvars.json
+infrastructure/terraform/**/crash.log
+infrastructure/terraform/**/crash.*.log
+infrastructure/terraform/**/*.backup
+infrastructure/terraform/**/terraform.tfstate.backup
+
+# ----------------------
+# Kubernetes
+# ----------------------
+k8s/**/*.secret.yaml
+k8s/**/secrets.yaml
+k8s/**/*-secrets.yaml
+*.secret.yaml
+
+# ----------------------
+# Docker
+# ----------------------
+docker-compose.override.yml
+docker-compose.local.yml
+*.dockerignore
+.dockerignore
+
+# ----------------------
+# Performance Tests (JMeter)
+# ----------------------
+perf-tests/results/
+perf-tests/*.csv
+perf-tests/*.jtl
+perf-tests/*.log
+
+# ----------------------
+# Logs & Reports
+# ----------------------
+*.log
+logs/
+reports/
+test-output/
+surefire-reports/
+test-reports/
+*.html
+*.xml
+*.json
+
+# ----------------------
+# OS / System
+# ----------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.bak
+*.tmp
+*.temp
+
+# ----------------------
+# Hardware Emulation
+# ----------------------
+hardware-emulation/**/*.dump
+hardware-emulation/**/*.pcap
+hardware-emulation/**/*.cap
+/dev/tty*
+
+# ----------------------
+# Test Management
+# ----------------------
+test-management/**/*.tmp
+test-management/**/*.bak
+*.xlsx.lock
+
+# ----------------------
+# Monitoring
+# ----------------------
+monitoring/**/*.db
+monitoring/**/*.sqlite
+monitoring/**/data/
+monitoring/**/logs/
+
+# ----------------------
+# Node / NPM (if used later)
+# ----------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ----------------------
+# Misc Build Outputs
+# ----------------------
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.tgz
+build/
+dist/
+out/
+bin/

@@ -1,0 +1,176 @@
+# test-management/traceability/requirements_traceability_matrix.csv
+# Requirements Traceability Matrix — POS Test Platform
+# 
+# This file can be imported into Excel/Google Sheets as a CSV.
+# Fields:
+#   - REQ_ID: Requirement identifier
+#   - REQ_TITLE: Requirement title
+#   - REQ_DESCRIPTION: Requirement description
+#   - TEST_CASE_ID: Associated test case ID(s) (comma-separated)
+#   - TEST_TYPE: Manual/Automated
+#   - AUTOMATION_STATUS: Automated/Manual/Planned
+#   - TEST_FILE: Location of test implementation (if automated)
+#   - SOURCE: Requirement source (Job Description, Industry Standard, etc.)
+#   - PRIORITY: High/Medium/Low
+#   - LAST_UPDATED: Date of last update
+
+REQ_ID,REQ_TITLE,REQ_DESCRIPTION,TEST_CASE_ID,TEST_TYPE,AUTOMATION_STATUS,TEST_FILE,SOURCE,PRIORITY,LAST_UPDATED
+REQ-001,Price Lookup,System returns price for a given SKU,TC_API_001,Automated,Automated,test-automation/.../TransactionAPITest.java,JD Required Skill,High,2026-01-15
+REQ-002,Bulk Price Lookup,System returns prices for multiple SKUs in one request,TC_API_002,Automated,Automated,test-automation/.../TransactionAPITest.java,Industry Standard,High,2026-01-15
+REQ-003,Catalog Retrieval,System returns full product catalog,TC_API_003,Automated,Automated,test-automation/.../TransactionAPITest.java,Industry Standard,Medium,2026-01-15
+REQ-004,Promotion Lookup by SKU,System returns applicable promotions for a SKU,TC_API_004,Automated,Automated,test-automation/.../TransactionAPITest.java,JD Required Skill,High,2026-01-15
+REQ-005,Cart Promotion Calculation,System calculates promotions for entire cart,TC_API_005,Automated,Automated,test-automation/.../TransactionAPITest.java,Industry Standard,High,2026-01-15
+REQ-006,Tax Calculation by Region,System calculates tax for a given subtotal and region,TC_API_006,Automated,Automated,test-automation/.../TaxCalculationTest.java,JD Required Skill,High,2026-01-15
+REQ-007,Zero Subtotal Tax,System returns zero tax for zero subtotal,TC_API_007,Automated,Automated,test-automation/.../TaxCalculationTest.java,Boundary Case,Medium,2026-01-15
+REQ-008,Negative Subtotal Guard,System rejects negative subtotal with 400 error,TC_API_008,Automated,Automated,test-automation/.../TaxCalculationTest.java,Boundary Case,Medium,2026-01-15
+REQ-009,Invalid Region Guard,System rejects invalid region with 404 error,TC_API_009,Automated,Automated,test-automation/.../TaxCalculationTest.java,Boundary Case,High,2026-01-15
+REQ-010,Tax-Exempt Items,System excludes tax-exempt items from tax calculation,TC_API_010,Automated,Automated,test-automation/.../TaxCalculationTest.java,Industry Standard,High,2026-01-15
+REQ-011,Tax Decimal Precision,System rounds tax amounts to 2 decimal places,TC_API_011,Automated,Automated,test-automation/.../TaxCalculationTest.java,Industry Standard,Medium,2026-01-15
+REQ-012,All Regions Endpoint,System returns all configured tax regions,TC_API_012,Automated,Automated,test-automation/.../TaxCalculationTest.java,Industry Standard,Low,2026-01-15
+REQ-013,Payment Authorization,System authorizes payment with valid test card,TC_API_013,Automated,Automated,test-automation/.../TransactionAPITest.java,JD Required Skill,High,2026-01-15
+REQ-014,Payment Decline,System declines payment with test card ending in 0000,TC_API_014,Automated,Automated,test-automation/.../TransactionAPITest.java,JD Required Skill,High,2026-01-15
+REQ-015,Payment Void,System voids a previously authorized payment,TC_API_015,Automated,Planned,test-automation/.../TransactionAPITest.java,Industry Standard,High,2026-01-15
+REQ-016,Payment Refund,System refunds a previously authorized payment,TC_API_016,Automated,Planned,test-automation/.../TransactionAPITest.java,Industry Standard,High,2026-01-15
+REQ-017,Transaction History,System retrieves transaction details by ID,TC_API_017,Automated,Automated,test-automation/.../TransactionAPITest.java,Industry Standard,Medium,2026-01-15
+REQ-018,Complete Transaction Flow,System completes sale flow: scan → price → tax → payment,TC_API_018,Automated,Automated,test-automation/.../TransactionAPITest.java,JD Required Skill,High,2026-01-15
+REQ-019,Multi-Item Transaction,System handles carts with multiple items,TC_API_019,Automated,Automated,test-automation/.../TransactionAPITest.java,Industry Standard,High,2026-01-15
+REQ-020,Invalid SKU Handling,System returns 404 for invalid SKU,TC_API_020,Automated,Automated,test-automation/.../TransactionAPITest.java,Industry Standard,Medium,2026-01-15
+REQ-021,Store-and-Forward,System queues transactions when network is offline,TC_OFFLINE_001,Automated,Automated,test-automation/.../OfflineSyncTest.java,JD Required Skill,High,2026-01-15
+REQ-022,Offline Sync,System syncs queued transactions when network is restored,TC_OFFLINE_002,Automated,Automated,test-automation/.../OfflineSyncTest.java,JD Required Skill,High,2026-01-15
+REQ-023,Queue Order Preservation,System maintains transaction order during sync,TC_OFFLINE_003,Automated,Automated,test-automation/.../OfflineSyncTest.java,Industry Standard,Medium,2026-01-15
+REQ-024,Sync Failure Retry,System retries failed sync operations,TC_OFFLINE_004,Automated,Automated,test-automation/.../OfflineSyncTest.java,Industry Standard,Medium,2026-01-15
+REQ-025,Vital Product Data,System stores and retrieves VPD (serial, firmware, etc.),TC_DIAG_001,Automated,Automated,test-automation/.../VPDValidatorTest.java,JD Required Skill,High,2026-01-15
+REQ-026,VPD Format Validation,Serial number follows pattern TCX-XXX-XXXXX,TC_DIAG_002,Automated,Automated,test-automation/.../VPDValidatorTest.java,JD Required Skill,High,2026-01-15
+REQ-027,Firmware Version Validation,Firmware version follows pattern vX.Y.Z,TC_DIAG_003,Automated,Automated,test-automation/.../VPDValidatorTest.java,JD Required Skill,High,2026-01-15
+REQ-028,MAC Address Validation,MAC address follows pattern XX:XX:XX:XX:XX:XX,TC_DIAG_004,Automated,Automated,test-automation/.../VPDValidatorTest.java,JD Required Skill,Medium,2026-01-15
+REQ-029,iButton Authentication,System authenticates iButton device,TC_IBUTTON_001,Manual,Manual,test-management/test-cases/diagnostic/TC_IBUTTON_001.md,JD Required Skill,High,2026-01-15
+REQ-030,RS-232 Communication,System communicates with RS-232 peripherals,TC_RS232_005,Manual,Manual,test-management/test-cases/diagnostic/TC_RS232_005.md,JD Required Skill,High,2026-01-15
+REQ-031,Hardware Inventory,System tracks hardware inventory and status,TC_ENV_001,Manual,Manual,infrastructure/inventory/tcx_device_inventory.xlsx,JD Required Skill,High,2026-01-15
+REQ-032,Environment Setup,System supports setup of test environments (physical/virtual),TC_ENV_002,Manual,Manual,docs/environment-setup/toshiba_diagnostics_setup.md,JD Required Skill,High,2026-01-15
+REQ-033,Test Estimates,System provides accurate test estimates for planning,TC_PROJ_001,Manual,N/A,agile/sprint-planning/estimates_template.xlsx,JD Required Skill,High,2026-01-15
+REQ-034,Performance Testing,System supports load testing with JMeter,TC_PERF_001,Automated,Automated,perf-tests/load-test.jmx,JD Preferred Skill,High,2026-01-15
+REQ-035,Stress Testing,System supports stress testing,TC_PERF_002,Automated,Automated,perf-tests/stress-test.jmx,JD Preferred Skill,High,2026-01-15
+REQ-036,Spike Testing,System supports spike testing,TC_PERF_003,Automated,Automated,perf-tests/spike-test.jmx,JD Preferred Skill,High,2026-01-15
+REQ-037,CI/CD Integration,System supports automated testing in Jenkins pipeline,TC_CI_001,Automated,N/A,ci-cd/Jenkinsfile,JD Preferred Skill,High,2026-01-15
+REQ-038,Containerized Test Execution,System supports headless test execution in containers,TC_CI_002,Automated,N/A,ci-cd/Dockerfile.test,JD Preferred Skill,High,2026-01-15
+REQ-039,Grafana Dashboard,System provides monitoring dashboards,TC_MON_001,Manual,N/A,monitoring/dashboards/pos_performance.json,JD Preferred Skill,High,2026-01-15
+REQ-040,Prometheus Alerts,System provides SLA and health alerts,TC_MON_002,Manual,N/A,monitoring/alerts/transaction_sla.yaml,JD Preferred Skill,High,2026-01-15
+REQ-041,Infrastructure as Code,System supports cloud provisioning via Terraform,TC_IAC_001,Manual,N/A,infrastructure/terraform/aws/main.tf,JD Preferred Skill,Medium,2026-01-15
+REQ-042,Multi-Cloud Support,System supports both AWS and Azure,TC_IAC_002,Manual,N/A,infrastructure/terraform/aws/,infrastructure/terraform/azure/,JD Preferred Skill,Medium,2026-01-15
+REQ-043,Hardware Emulation,RS-232 peripherals can be emulated via software,TC_HW_001,Manual,N/A,hardware-emulation/virtual-com-ports/socat_rs232_simulator.sh,JD Required Skill,High,2026-01-15
+REQ-044,Diagnostic Configuration,System uses diags2x20.properties for RS-232 config,TC_HW_002,Manual,N/A,hardware-emulation/virtual-com-ports/diags2x20.properties.template,JD Required Skill,High,2026-01-15
+REQ-045,USB Peripheral Sharing,System supports USB-over-IP device sharing,TC_HW_003,Manual,N/A,hardware-emulation/usb-ip-hub/usbip_bind_script.sh,JD Required Skill,Medium,2026-01-15
+REQ-046,Mentorship,System provides training modules for junior team members,TC_TRN_001,Manual,N/A,mentorship/training-modules/,JD Required Skill,High,2026-01-15
+REQ-047,Documentation,System maintains comprehensive project documentation,TC_DOC_001,Manual,N/A,README.md,JD Required Skill,High,2026-01-15
+REQ-048,Swarm Testing,System supports generic coordinator + worker pool testing,TC_PERF_004,Automated,Automated,simulators/queen-controller/queen.py,Industry Standard,High,2026-01-15
+REQ-049,Command Bank,System provides transaction command templates,TC_PERF_005,Automated,Automated,simulators/queen-controller/command_bank.json,Industry Standard,High,2026-01-15
+REQ-050,Worker Autoscaling,System supports HorizontalPodAutoscaler for workers,TC_K8S_001,Manual,N/A,k8s/pos-workers/hpa.yaml,JD Preferred Skill,High,2026-01-15
+
+# test-management/traceability/requirements_traceability_matrix.csv
+# Requirements Traceability Matrix — POS Test Platform
+# 
+# This file can be imported into Excel/Google Sheets as a CSV.
+# Fields:
+#   - REQ_ID: Requirement identifier
+#   - REQ_TITLE: Requirement title
+#   - REQ_DESCRIPTION: Requirement description
+#   - TEST_CASE_ID: Associated test case ID(s) (comma-separated)
+#   - TEST_TYPE: Manual/Automated
+#   - AUTOMATION_STATUS: Automated/Manual/Planned
+#   - TEST_FILE: Location of test implementation (if automated)
+#   - SOURCE: Requirement source (Job Description, Industry Standard, etc.)
+#   - PRIORITY: High/Medium/Low
+#   - LAST_UPDATED: Date of last update
+
+# ============================================================
+# PHASE 12: PRODUCT CAPABILITY PROFILES
+# ============================================================
+REQ-PROD-001,ELERA Platform Profile,Unified-commerce capability manifest with POS and Self-Service modes,TC_ELERA_001,Automated,Automated,test-automation/.../e2e/EleraE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-002,MxP Vision Kiosk Profile,Bulk scan with computer-vision mock + weight-scale cross-check + NFC/biometric payment,TC_VISION_001,Automated,Automated,test-automation/.../e2e/MxpVisionKioskE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-003,MxP SMART Hybrid Profile,Pedestal/kiosk with cashier↔self-service mode toggle (rotate 180°),TC_HYBRID_001,Automated,Automated,test-automation/.../e2e/MxpSmartHybridE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-004,MxP SMART Wall Profile,Space-constrained wall-mounted lane with reduced peripheral set (no scale),TC_WALL_001,Automated,Automated,test-automation/.../e2e/MxpSmartWallE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-005,MxP SMART Wing Profile,Modular lane with independently togglable peripherals,TC_WING_001,Automated,Automated,test-automation/.../e2e/MxpSmartWingE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-006,Self Checkout System 7 Profile,Full-basket attended/unattended self-service with bagging-area scale,TC_SCS7_001,Automated,Automated,test-automation/.../e2e/SelfCheckoutSystem7E2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-007,TCx Display Profile,Display capability matrix with size/orientation validation,TC_DISPLAY_001,Automated,Automated,test-automation/.../e2e/TcxDisplayMatrixTest.java,Product Requirement,High,2026-01-15
+REQ-PROD-008,TCx Single Station Printer Profile,Single virtual print station with paper-out/jam simulation,TC_PRINTER_SINGLE_001,Automated,Automated,test-automation/.../e2e/TcxPrinterSingleE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-009,TCx Dual Station Printer Profile,Two independent virtual print stations with independent faults,TC_PRINTER_DUAL_001,Automated,Automated,test-automation/.../e2e/TcxPrinterDualE2ETest.java,Product Requirement,High,2026-01-15
+REQ-PROD-010,Supported OS Matrix,OS family targets for each product profile,TC_OS_001,Manual,N/A,docs/environment-setup/supported_os_matrix.md,Product Requirement,Medium,2026-01-15
+
+# ============================================================
+# PHASE 13: END-TO-END SCENARIOS PER PRODUCT
+# ============================================================
+REQ-E2E-001,ELERA POS Mode Sale,Complete transaction in POS mode with consistent total,TC_ELERA_001,Automated,Automated,test-automation/.../e2e/EleraE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-002,ELERA Self-Service Mode Sale,Complete transaction in Self-Service mode with consistent total,TC_ELERA_002,Automated,Automated,test-automation/.../e2e/EleraE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-003,ELERA Mode Consistency,Same basket produces same total across both modes,TC_ELERA_003,Automated,Automated,test-automation/.../e2e/EleraE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-004,ELERA Produce Recognition,Mock vision recognition with confidence scoring,TC_ELERA_004,Automated,Automated,test-automation/.../e2e/EleraE2ETest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-005,Vision Kiosk Card Payment,Bulk scan → weight check → card payment happy path,TC_VISION_001,Automated,Automated,test-automation/.../e2e/MxpVisionKioskE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-006,Vision Kiosk NFC Payment,Bulk scan → weight check → NFC payment happy path,TC_VISION_002,Automated,Automated,test-automation/.../e2e/MxpVisionKioskE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-007,Vision Kiosk Biometric Payment,Bulk scan → weight check → biometric payment happy path,TC_VISION_003,Automated,Automated,test-automation/.../e2e/MxpVisionKioskE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-008,Vision Kiosk Weight Mismatch,Weight mismatch triggers assist event (not silent pass),TC_VISION_004,Automated,Automated,test-automation/.../e2e/MxpVisionKioskE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-009,Vision Kiosk NFC Declined,Declined NFC card returns 402 error,TC_VISION_005,Automated,Automated,test-automation/.../e2e/MxpVisionKioskE2ETest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-010,SMART Hybrid Mode Switch,Start self-service → switch to assisted → complete sale,TC_HYBRID_001,Automated,Automated,test-automation/.../e2e/MxpSmartHybridE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-011,SMART Hybrid Assisted Override,Assisted mode override feature works,TC_HYBRID_002,Automated,Automated,test-automation/.../e2e/MxpSmartHybridE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-012,SMART Hybrid Self-Service Reject,Self-service mode rejects override,TC_HYBRID_003,Automated,Automated,test-automation/.../e2e/MxpSmartHybridE2ETest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-013,SMART Hybrid Mode Toggle,Mode toggle endpoint works correctly,TC_HYBRID_004,Automated,Automated,test-automation/.../e2e/MxpSmartHybridE2ETest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-014,SMART Wall No Scale Sale,Full sale completes without scale peripheral,TC_WALL_001,Automated,Automated,test-automation/.../e2e/MxpSmartWallE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-015,SMART Wall Scale Rejected,Scale operations rejected with clear error,TC_WALL_002,Automated,Automated,test-automation/.../e2e/MxpSmartWallE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-016,SMART Wall Compact Printer,Compact printer receipt uses 3-inch format,TC_WALL_003,Automated,Automated,test-automation/.../e2e/MxpSmartWallE2ETest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-017,SMART Wall Multiple Items,Multi-item sale with quantities,TC_WALL_004,Automated,Automated,test-automation/.../e2e/MxpSmartWallE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-018,SMART Wing Full Config,Sale with all peripherals enabled,TC_WING_001,Automated,Automated,test-automation/.../e2e/MxpSmartWingE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-019,SMART Wing Minimal Config,Sale with scanner + printer only,TC_WING_002,Automated,Automated,test-automation/.../e2e/MxpSmartWingE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-020,SMART Wing Same Basket,Total consistent across different configurations,TC_WING_003,Automated,Automated,test-automation/.../e2e/MxpSmartWingE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-021,SMART Wing Peripheral Toggle,Toggle endpoint changes peripheral state correctly,TC_WING_004,Automated,Automated,test-automation/.../e2e/MxpSmartWingE2ETest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-022,SCS7 Unattended Happy Path,Multi-item basket → scan → bagging → payment → receipt,TC_SCS7_001,Automated,Automated,test-automation/.../e2e/SelfCheckoutSystem7E2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-023,SCS7 Attended Override,Weight mismatch → attended override → complete sale,TC_SCS7_002,Automated,Automated,test-automation/.../e2e/SelfCheckoutSystem7E2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-024,SCS7 Unexpected Item,Unexpected item in bagging area triggers assist event,TC_SCS7_003,Automated,Automated,test-automation/.../e2e/SelfCheckoutSystem7E2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-025,SCS7 Receipt Generation,Receipt contains all items and correct totals,TC_SCS7_004,Automated,Automated,test-automation/.../e2e/SelfCheckoutSystem7E2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-026,TCx Display Matrix,All supported size/orientation combos accepted,TC_DISPLAY_001,Automated,Automated,test-automation/.../e2e/TcxDisplayMatrixTest.java,Product E2E,High,2026-01-15
+REQ-E2E-027,TCx Display Bad Combo,21.5" portrait combo rejected,TC_DISPLAY_002,Automated,Automated,test-automation/.../e2e/TcxDisplayMatrixTest.java,Product E2E,High,2026-01-15
+REQ-E2E-028,TCx Display Capabilities,Capabilities endpoint returns matrix correctly,TC_DISPLAY_003,Automated,Automated,test-automation/.../e2e/TcxDisplayMatrixTest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-029,TCx Display Validation History,Validation history tracks all attempts,TC_DISPLAY_004,Automated,Automated,test-automation/.../e2e/TcxDisplayMatrixTest.java,Product E2E,Medium,2026-01-15
+REQ-E2E-030,TCx Printer Single Happy Path,Sale completes and receipt written to virtual port,TC_PRINTER_SINGLE_001,Automated,Automated,test-automation/.../e2e/TcxPrinterSingleE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-031,TCx Printer Single Paper-Out,Paper-out error surfaced, transaction not lost,TC_PRINTER_SINGLE_002,Automated,Automated,test-automation/.../e2e/TcxPrinterSingleE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-032,TCx Printer Single Retry,Retry succeeds after paper restoration,TC_PRINTER_SINGLE_003,Automated,Automated,test-automation/.../e2e/TcxPrinterSingleE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-033,TCx Printer Dual Both Stations,Sale prints to both stations successfully,TC_PRINTER_DUAL_001,Automated,Automated,test-automation/.../e2e/TcxPrinterDualE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-034,TCx Printer Dual Customer Jam,Customer jam doesn't block merchant,TC_PRINTER_DUAL_002,Automated,Automated,test-automation/.../e2e/TcxPrinterDualE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-035,TCx Printer Dual Merchant Jam,Merchant jam doesn't block customer,TC_PRINTER_DUAL_003,Automated,Automated,test-automation/.../e2e/TcxPrinterDualE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-036,TCx Printer Dual Transaction,Transaction completes with one station jammed,TC_PRINTER_DUAL_004,Automated,Automated,test-automation/.../e2e/TcxPrinterDualE2ETest.java,Product E2E,High,2026-01-15
+REQ-E2E-037,OS Matrix Execution Plan,Cross-OS test execution documented,TC_OS_001,Manual,N/A,docs/test-strategy/os_matrix_execution_plan.md,Product Requirement,Medium,2026-01-15
+
+# ============================================================
+# PHASE 14: CROSS-PRODUCT REGRESSION
+# ============================================================
+REQ-CROSS-001,Product Traceability,All products mapped to E2E test classes,TC_CROSS_001,Manual,N/A,test-management/traceability/requirements_traceability_matrix.csv,Cross-Product,High,2026-01-15
+REQ-CROSS-002,Product Risk Mitigation,Product-specific risks identified and mitigated,TC_CROSS_002,Manual,N/A,docs/test-strategy/risk_mitigation_log.md,Cross-Product,High,2026-01-15
+REQ-CROSS-003,CI/CD Product Matrix,Jenkins pipeline supports product profile axis,TC_CROSS_003,Manual,N/A,ci-cd/Jenkinsfile,Cross-Product,Medium,2026-01-15
+
+# test-management/traceability/requirements_traceability_matrix.csv
+# Add these rows to the existing CSV file
+
+# ============================================================
+# PHASE 15: UI TEST HARNESS & TOOLING
+# ============================================================
+REQ-UI-001,Selenium WebDriver Integration,UI automation dependencies added to Maven project,TC_UI_001,Automated,Automated,test-automation/pom.xml,UI Requirement,High,2026-01-15
+REQ-UI-002,Kiosk UI Simulator,Static HTML/CSS/JS harness with 5 screen states,TC_UI_002,Automated,Automated,simulators/kiosk-ui-harness/,UI Requirement,High,2026-01-15
+REQ-UI-003,BaseKioskPage Page Object,Common Selenium page object with tap helper and assertions,TC_UI_003,Automated,Automated,test-automation/.../ui/BaseKioskPage.java,UI Requirement,High,2026-01-15
+
+# ============================================================
+# PHASE 16: PER-PRODUCT UI SCENARIOS
+# ============================================================
+REQ-UI-004,ELERA UI — POS vs Self-Service Modes,Different toolbars/element sets per mode,TC_UI_004,Automated,Automated,test-automation/.../ui/EleraUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-005,Vision Kiosk UI — Bulk Scan Sequence,Place items → bulk-scan results → weight-mismatch assist → payment,TC_UI_005,Automated,Automated,test-automation/.../ui/MxpVisionKioskUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-006,SMART Hybrid UI — Mode Switch,Self-service ↔ assisted mode toggle flips layout,TC_UI_006,Automated,Automated,test-automation/.../ui/MxpSmartHybridUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-007,SMART Wall UI — Reduced Peripherals,Scale widget hidden, compact layout,TC_UI_007,Automated,Automated,test-automation/.../ui/MxpSmartWallUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-008,SMART Wing UI — Peripheral Toggling,Icons appear/disappear per combination fixture,TC_UI_008,Automated,Automated,test-automation/.../ui/MxpSmartWingUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-009,SCS7 UI — Form Factor Profiles,Cash-recycling/cashless/kiosk payment controls,TC_UI_009,Automated,Automated,test-automation/.../ui/SelfCheckoutSystem7UiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-010,TCx Display UI — Responsive Layout,No overflow/clipping across size/orientation matrix,TC_UI_010,Automated,Automated,test-automation/.../ui/TcxDisplayResponsiveTest.java,UI Requirement,High,2026-01-15
+REQ-UI-011,TCx Single Printer UI — Printing Status,"Printing receipt…" status, paper-out alert,TC_UI_011,Automated,Automated,test-automation/.../ui/TcxPrinterSingleUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-012,TCx Dual Printer UI — Independent Status,Two independent status indicators, one fault one success,TC_UI_012,Automated,Automated,test-automation/.../ui/TcxPrinterDualUiTest.java,UI Requirement,High,2026-01-15
+REQ-UI-013,Localization & Accessibility,Locale switching (EN/ES/FR), touch targets (44px), color contrast (4.5:1),TC_UI_013,Automated,Automated,test-automation/.../ui/LocalizationAccessibilityTest.java,UI Requirement,High,2026-01-15
+
+# ============================================================
+# PHASE 17: UI REGRESSION WIRING
+# ============================================================
+REQ-UI-014,UI Suite in testng.xml,UI tests included in test suite,TC_UI_014,Automated,Automated,test-automation/src/test/resources/testng.xml,UI Requirement,High,2026-01-15
+REQ-UI-015,UI Stage in Jenkins,UI tests run in CI/CD pipeline,TC_UI_015,Automated,Automated,ci-cd/Jenkinsfile,UI Requirement,High,2026-01-15
+REQ-UI-016,Chrome in Dockerfile,UI tests run headlessly in container,TC_UI_016,Automated,Automated,ci-cd/Dockerfile.test,UI Requirement,High,2026-01-15

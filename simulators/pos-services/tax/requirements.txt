@@ -1,0 +1,3 @@
+# simulators/pos-services/tax/requirements.txt
+
+Flask==2.3.3

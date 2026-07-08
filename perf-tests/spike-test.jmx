@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  perf-tests/spike-test.jmx
+  JMeter Spike Test - Sudden Massive Load
+  
+  This spike test simulates a sudden massive increase in load
+  (e.g., flash sale, holiday rush) to validate that the system
+  can handle sudden traffic spikes.
+  
+  Run with: jmeter -n -t perf-tests/spike-test.jmx -l results/spike-test.csv -JBASE_URL=http://localhost
+  
+  Variables:
+    - BASE_URL: Base URL for services (default: http://localhost)
+    - STEADY_THREADS: Threads during steady state (default: 5)
+    - SPIKE_THREADS: Threads during spike (default: 50)
+    - STEADY_DURATION: Duration of steady state in seconds (default: 60)
+    - SPIKE_DURATION: Duration of spike in seconds (default: 30)
+    - RECOVERY_DURATION: Duration after spike in seconds (default: 60)
+    - TARGET_THROUGHPUT: Requests per minute per user (default: 6)
+-->
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="POS Spike Test Plan">
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="BASE_URL" elementType="Argument">
+            <stringProp name="Argument.name">BASE_URL</stringProp>
+            <stringProp name="Argument.value">${__P(BASE_URL,http://localhost)}</stringProp>
+          </elementProp>
+          <elementProp name="STEADY_THREADS" elementType="Argument">
+            <stringProp name="Argument.name">STEADY_THREADS</stringProp>
+            <stringProp name="Argument.value">${__P(STEADY_THREADS,5)}</stringProp>
+          </elementProp>
+          <elementProp name="SPIKE_THREADS" elementType="Argument">
+            <stringProp name="Argument.name">SPIKE_THREADS</stringProp>
+            <stringProp name="Argument.value">${__P(SPIKE_THREADS,50)}</stringProp>
+          </elementProp>
+          <elementProp name="STEADY_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">STEADY_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(STEADY_DURATION,60)}</stringProp>
+          </elementProp>
+          <elementProp name="SPIKE_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">SPIKE_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(SPIKE_DURATION,30)}</stringProp>
+          </elementProp>
+          <elementProp name="RECOVERY_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">RECOVERY_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(RECOVERY_DURATION,60)}</stringProp>
+          </elementProp>
+          <elementProp name="TARGET_THROUGHPUT" elementType="Argument">
+            <stringProp name="Argument.name">TARGET_THROUGHPUT</stringProp>
+            <stringProp name="Argument.value">${__P(TARGET_THROUGHPUT,6)}</stringProp>
+          </elementProp>
+          <elementProp name="PRICING_PORT" elementType="Argument">
+            <stringProp name="Argument.name">PRICING_PORT</stringProp>
+            <stringProp name="Argument.value">8081</stringProp>
+          </elementProp>
+          <elementProp name="TAX_PORT" elementType="Argument">
+            <stringProp name="Argument.name">TAX_PORT</stringProp>
+            <stringProp name="Argument.value">8083</stringProp>
+          </elementProp>
+          <elementProp name="PAYMENT_PORT" elementType="Argument">
+            <stringProp name="Argument.name">PAYMENT_PORT</stringProp>
+            <stringProp name="Argument.value">8084</stringProp>
+          </elementProp>
+          <elementProp name="TEST_SKU" elementType="Argument">
+            <stringProp name="Argument.name">TEST_SKU</stringProp>
+            <stringProp name="Argument.value">SKU-1001</stringProp>
+          </elementProp>
+          <elementProp name="TEST_REGION" elementType="Argument">
+            <stringProp name="Argument.name">TEST_REGION</stringProp>
+            <stringProp name="Argument.value">CA</stringProp>
+          </elementProp>
+          <elementProp name="TEST_CARD" elementType="Argument">
+            <stringProp name="Argument.name">TEST_CARD</stringProp>
+            <stringProp name="Argument.value">4111111111111111</stringProp>
+          </elementProp>
+          <elementProp name="TEST_MERCHANT" elementType="Argument">
+            <stringProp name="Argument.name">TEST_MERCHANT</stringProp>
+            <stringProp name="Argument.value">TEST_MERCHANT_001</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+    </TestPlan>
+
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="BASE_URL" elementType="Argument">
+            <stringProp name="Argument.name">BASE_URL</stringProp>
+            <stringProp name="Argument.value">${BASE_URL}</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
+        <boolProp name="HTTPSampler.image_parser">false</boolProp>
+        <boolProp name="HTTPSampler.concurrentDwn">false</boolProp>
+        <boolProp name="HTTPSampler.useKeepAlive">true</boolProp>
+        <stringProp name="HTTPSampler.protocol">http</stringProp>
+        <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
+        <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+      </ConfigTestElement>
+      <hashTree/>
+
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="Content-Type" elementType="Header">
+            <stringProp name="Header.name">Content-Type</stringProp>
+            <stringProp name="Header.value">application/json</stringProp>
+          </elementProp>
+          <elementProp name="Accept" elementType="Header">
+            <stringProp name="Header.name">Accept</stringProp>
+            <stringProp name="Header.value">application/json</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+
+      <!-- Steady State Thread Group -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="01 - Steady State (Normal Load)">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${STEADY_THREADS}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">15</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${STEADY_DURATION}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Throughput Controller">
+          <intProp name="ThroughputController.style">1</intProp>
+          <doubleProp>
+            <name>ThroughputController.throughput</name>
+            <value>${TARGET_THROUGHPUT}</value>
+          </doubleProp>
+          <stringProp name="ThroughputController.perThread">true</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <!-- Transaction samplers (same as load test) -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="01 - Price Lookup">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${PRICING_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/price/${TEST_SKU}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49587">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="02 - Tax Calculation">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${TAX_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/tax</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <stringProp name="HTTPSampler.postBodyRaw">
+{
+  "subtotal": ${__groovy(org.apache.jmeter.util.JMeterUtils.getProperty("price_result.price", 1.0))},
+  "region": "${TEST_REGION}"
+}
+            </stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49589">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="03 - Payment Authorization">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${PAYMENT_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/payment/authorize</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <stringProp name="HTTPSampler.postBodyRaw">
+{
+  "amount": ${__groovy(org.apache.jmeter.util.JMeterUtils.getProperty("tax_result.total", 1.0))},
+  "currency": "USD",
+  "card_number": "${TEST_CARD}",
+  "card_expiry": "12/25",
+  "cvv": "123",
+  "merchant_id": "${TEST_MERCHANT}",
+  "order_id": "SPIKE-ORDER-${__threadNum}-${__time(,)}"
+}
+            </stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200 or 402">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49591">200</stringProp>
+                <stringProp name="49592">402</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK or 402 Payment Required</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">5</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Transaction Controller">
+          <boolProp name="TransactionController.includeTimers">true</boolProp>
+          <boolProp name="TransactionController.parent">true</boolProp>
+        </TransactionController>
+        <hashTree/>
+      </hashTree>
+
+      <!-- Spike Thread Group - Massive load spike -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="02 - SPIKE (Massive Load)">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${SPIKE_THREADS}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${SPIKE_DURATION}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Throughput Controller (Spike)">
+          <intProp name="ThroughputController.style">1</intProp>
+          <doubleProp>
+            <name>ThroughputController.throughput</name>
+            <value>${__P(SPIKE_THROUGHPUT,${TARGET_THROUGHPUT})}</value>
+          </doubleProp>
+          <stringProp name="ThroughputController.perThread">true</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <!-- Same transaction samplers -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="01 - Price Lookup (Spike)">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${PRICING_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/price/${TEST_SKU}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49587">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="02 - Tax Calculation (Spike)">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${TAX_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/tax</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <stringProp name="HTTPSampler.postBodyRaw">
+{
+  "subtotal": ${__groovy(org.apache.jmeter.util.JMeterUtils.getProperty("price_result.price", 1.0))},
+  "region": "${TEST_REGION}"
+}
+            </stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49589">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="03 - Payment Authorization (Spike)">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${PAYMENT_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/payment/authorize</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <stringProp name="HTTPSampler.postBodyRaw">
+{
+  "amount": ${__groovy(org.apache.jmeter.util.JMeterUtils.getProperty("tax_result.total", 1.0))},
+  "currency": "USD",
+  "card_number": "${TEST_CARD}",
+  "card_expiry": "12/25",
+  "cvv": "123",
+  "merchant_id": "${TEST_MERCHANT}",
+  "order_id": "SPIKE-ORDER-${__threadNum}-${__time(,)}"
+}
+            </stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200 or 402">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49591">200</stringProp>
+                <stringProp name="49592">402</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK or 402 Payment Required</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">5</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Transaction Controller (Spike)">
+          <boolProp name="TransactionController.includeTimers">true</boolProp>
+          <boolProp name="TransactionController.parent">true</boolProp>
+        </TransactionController>
+        <hashTree/>
+      </hashTree>
+
+      <!-- Recovery Thread Group - Return to steady state -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="03 - Recovery (Post-Spike)">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${STEADY_THREADS}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${RECOVERY_DURATION}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Throughput Controller (Recovery)">
+          <intProp name="ThroughputController.style">1</intProp>
+          <doubleProp>
+            <name>ThroughputController.throughput</name>
+            <value>${TARGET_THROUGHPUT}</value>
+          </doubleProp>
+          <stringProp name="ThroughputController.perThread">true</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="01 - Price Lookup (Recovery)">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${PRICING_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/price/${TEST_SKU}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49587">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="02 - Tax Calculation (Recovery)">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${TAX_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/tax</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <stringProp name="HTTPSampler.postBodyRaw">
+{
+  "subtotal": ${__groovy(org.apache.jmeter.util.JMeterUtils.getProperty("price_result.price", 1.0))},
+  "region": "${TEST_REGION}"
+}
+            </stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49589">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">2</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="03 - Payment Authorization (Recovery)">
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <intProp name="HTTPSampler.port">${PAYMENT_PORT}</intProp>
+            <stringProp name="HTTPSampler.path">/payment/authorize</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <stringProp name="HTTPSampler.postBodyRaw">
+{
+  "amount": ${__groovy(org.apache.jmeter.util.JMeterUtils.getProperty("tax_result.total", 1.0))},
+  "currency": "USD",
+  "card_number": "${TEST_CARD}",
+  "card_expiry": "12/25",
+  "cvv": "123",
+  "merchant_id": "${TEST_MERCHANT}",
+  "order_id": "SPIKE-ORDER-${__threadNum}-${__time(,)}"
+}
+            </stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code 200 or 402">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49591">200</stringProp>
+                <stringProp name="49592">402</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message">Response must be 200 OK or 402 Payment Required</stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">5</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Transaction Controller (Recovery)">
+          <boolProp name="TransactionController.includeTimers">true</boolProp>
+          <boolProp name="TransactionController.parent">true</boolProp>
+        </TransactionController>
+        <hashTree/>
+      </hashTree>
+
+      <!-- Listeners -->
+      <ResultCollector guiclass="StatGraphVisualizer" testclass="ResultCollector" testname="Aggregate Report">
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">results/spike-test.csv</stringProp>
+      </ResultCollector>
+      <hashTree/>
+
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+        <boolProp name="ResultCollector.error_logging">true</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">results/spike-test-details.csv</stringProp>
+      </ResultCollector>
+      <hashTree/>
+
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">results/spike-summary.csv</stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

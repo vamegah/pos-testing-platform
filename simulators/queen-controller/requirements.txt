@@ -1,0 +1,4 @@
+# simulators/queen-controller/requirements.txt
+
+# No external dependencies beyond Python standard library
+# (subprocess, multiprocessing, json, time, logging, etc.)

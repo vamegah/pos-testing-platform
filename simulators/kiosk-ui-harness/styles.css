@@ -1,0 +1,526 @@
+/* simulators/kiosk-ui-harness/styles.css */
+/* Kiosk UI Simulator — Touch-first, no hover-dependent UI */
+
+/* ========== Reset & Base ========== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 0 30px rgba(0,0,0,0.08);
+}
+
+/* ========== Header ========== */
+#app-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #1a1a2e;
+    color: #ffffff;
+    flex-shrink: 0;
+    min-height: 64px;
+    gap: 8px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.profile-badge {
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #a8b2d1;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.header-right label {
+    font-size: 0.8rem;
+    color: #a8b2d1;
+}
+
+#profile-select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.85rem;
+    background: #2d2d44;
+    color: #fff;
+    min-width: 140px;
+    min-height: 36px;
+}
+
+/* ========== Buttons — Touch-first (min 44px tap target) ========== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    min-height: 44px;
+    min-width: 44px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: opacity 0.15s, transform 0.1s;
+    text-decoration: none;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn-primary {
+    background: #4361ee;
+    color: #fff;
+}
+.btn-primary:hover { background: #3651d4; }
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #1a1a2e;
+}
+.btn-secondary:hover { background: #dde1e6; }
+
+.btn-warning {
+    background: #f77f00;
+    color: #fff;
+}
+.btn-warning:hover { background: #e07000; }
+
+.btn-danger {
+    background: #d62828;
+    color: #fff;
+}
+.btn-danger:hover { background: #bf2323; }
+
+.btn-large {
+    font-size: 1.25rem;
+    padding: 16px 40px;
+    min-height: 56px;
+}
+
+/* ========== Screen Container ========== */
+#screen-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fc;
+}
+
+.screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.screen.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen-content {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+/* ========== Screen: Welcome ========== */
+#screen-welcome .screen-content {
+    text-align: center;
+    padding: 48px 32px;
+}
+
+#screen-welcome h1 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    color: #1a1a2e;
+}
+
+#screen-welcome p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 32px;
+}
+
+/* ========== Screen: Basket ========== */
+.basket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 16px;
+}
+
+.basket-header h2 {
+    font-size: 1.3rem;
+}
+
+.basket-actions {
+    display: flex;
+    gap: 16px;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.basket-actions span {
+    font-weight: 600;
+}
+
+.basket-items {
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.empty-message {
+    color: #999;
+    text-align: center;
+    padding: 32px 0;
+}
+
+.basket-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.basket-item .item-name {
+    font-weight: 500;
+}
+.basket-item .item-price {
+    font-weight: 600;
+}
+
+.basket-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 2px solid #e9ecef;
+}
+
+.peripheral-indicators {
+    display: flex;
+    gap: 12px;
+    font-size: 0.8rem;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.peripheral-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #e9ecef;
+    font-size: 0.75rem;
+}
+.peripheral-indicator.active {
+    background: #d4edda;
+}
+.peripheral-indicator.inactive {
+    background: #f8d7da;
+    opacity: 0.6;
+}
+
+/* ========== Screen: Payment ========== */
+.payment-summary {
+    text-align: center;
+    padding: 16px;
+    background: #f8f9fc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.payment-summary span {
+    font-size: 1.2rem;
+}
+
+.payment-summary strong {
+    font-size: 1.6rem;
+    color: #1a1a2e;
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.payment-method {
+    padding: 14px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+    background: #fff;
+    cursor: pointer;
+    touch-action: manipulation;
+    min-height: 56px;
+    transition: border-color 0.15s;
+}
+
+.payment-method.selected {
+    border-color: #4361ee;
+    background: #eef2ff;
+}
+
+.payment-method .method-icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.payment-status {
+    margin-top: 16px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: none;
+}
+
+.payment-status.success {
+    display: block;
+    background: #d4edda;
+    color: #155724;
+}
+.payment-status.failure {
+    display: block;
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ========== Screen: Receipt ========== */
+.receipt-success {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.receipt-success .checkmark {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.receipt-success h2 {
+    font-size: 1.6rem;
+}
+
+.receipt-details {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* ========== Overlay: Assist ========== */
+.screen.overlay {
+    z-index: 100;
+    pointer-events: none;
+}
+
+.screen.overlay.active {
+    pointer-events: auto;
+}
+
+.overlay-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+}
+
+.overlay-content {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px 32px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: overlaySlideUp 0.25s ease-out;
+}
+
+@keyframes overlaySlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.assist-icon {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+}
+
+.overlay-content h2 {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    color: #d62828;
+}
+
+.overlay-content p {
+    color: #555;
+    margin-bottom: 16px;
+}
+
+.assist-details {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.assist-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+/* ========== Footer ========== */
+#app-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px 20px;
+    background: #f0f2f5;
+    font-size: 0.75rem;
+    color: #777;
+    flex-shrink: 0;
+    border-top: 1px solid #e0e0e0;
+    gap: 4px;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 640px) {
+    #app-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 16px;
+    }
+    .header-left, .header-right {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .header-right label {
+        font-size: 0.7rem;
+    }
+    #profile-select {
+        min-width: 100px;
+        font-size: 0.75rem;
+    }
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        min-height: 40px;
+    }
+    .screen-content {
+        padding: 20px 16px;
+    }
+    #screen-welcome h1 {
+        font-size: 1.6rem;
+    }
+    .basket-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .payment-methods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .overlay-content {
+        padding: 28px 20px;
+        margin: 16px;
+    }
+}
+
+/* ========== Accessibility ========== */
+/* Minimum tap target size enforced */
+.btn, .payment-method, #profile-select, button {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Focus indicators */
+.btn:focus-visible, select:focus-visible, button:focus-visible {
+    outline: 3px solid #4361ee;
+    outline-offset: 2px;
+}
+
+/* High contrast - ensures button text is readable */
+.btn-primary { color: #ffffff; }
+.btn-secondary { color: #1a1a2e; }
+.btn-warning { color: #ffffff; }
+.btn-danger { color: #ffffff; }

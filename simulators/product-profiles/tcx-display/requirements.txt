@@ -1,0 +1,3 @@
+# simulators/product-profiles/tcx-display/requirements.txt
+
+Flask==2.3.3

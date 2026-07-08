@@ -1,0 +1,137 @@
+# hardware-emulation/virtual-com-ports/diags2x20.properties.template
+# ============================================================
+# Toshiba Diagnostics Minimal UI - RS-232 Configuration Template
+# ============================================================
+#
+# This template defines the RS-232 communication parameters for
+# the Toshiba Diagnostics Minimal UI (2x20 display mode).
+#
+# To use:
+#   1. Copy this file to the root of your Toshiba Diagnostics USB key
+#   2. Rename it to: diags2x20.properties
+#   3. Adjust the parameters below as needed for your peripheral
+#   4. Boot the POS system from the USB key
+#
+# ============================================================
+
+# ----------------------------
+# RS-232 Communication Parameters
+# ----------------------------
+
+# Baud Rate - Communication speed in bits per second
+# Options: 9600, 19200, 38400, 57600, 115200
+# Default for most Toshiba peripherals: 9600
+baudrate=9600
+
+# Data Bits - Number of data bits per character
+# Options: 7, 8
+# Default: 8
+databits=8
+
+# Stop Bits - Number of stop bits per character
+# Options: 1, 2
+# Default: 1
+stopbits=1
+
+# Parity - Error checking method
+# Options: None, Even, Odd
+# Default: None
+parity=None
+
+# Flow Control Protocol - Handshake method for data flow
+# Options: XON/XOFF (software), DTR/DSR (hardware)
+# Default: XON/XOFF
+protocol=XON/XOFF
+
+# ----------------------------
+# Peripheral Configuration
+# ----------------------------
+
+# Printer Model - Identifies the connected printer type
+# Options: TCx80, TCx60, SurePOS, Generic
+# Used for diagnostic printer tests
+printer.model=TCx80
+
+# Scanner Model - Identifies the connected scanner type
+# Options: Honeywell, Motorola, Datalogic, Generic
+# Used for diagnostic scanner tests
+scanner.model=Honeywell
+
+# Scale Model - Identifies the connected scale type
+# Options: Micros, Mettler, Generic
+# Used for diagnostic scale tests
+scale.model=Micros
+
+# ----------------------------
+# Diagnostic Settings
+# ----------------------------
+
+# Diagnostic Timeout - Maximum time to wait for peripheral response (seconds)
+# If a peripheral doesn't respond within this time, the test fails
+# Default: 30
+diagnostic.timeout=30
+
+# Diagnostic Retries - Number of times to retry a failed diagnostic test
+# Default: 3
+diagnostic.retries=3
+
+# iButton Authentication - Whether to require iButton authentication
+# Options: true, false
+# If true, diagnostic tests require a valid iButton device
+iButton.authentication.required=true
+
+# ----------------------------
+# Minimal UI Display Settings
+# ----------------------------
+
+# Display Lines - Number of lines on the display
+# Fixed for Minimal UI mode: 2
+display.lines=2
+
+# Display Characters - Number of characters per line
+# Fixed for Minimal UI mode: 20
+display.characters=20
+
+# Menu Timeout - Time before returning to main menu (seconds)
+# 0 = never timeout
+# Default: 60
+display.menu.timeout=60
+
+# ----------------------------
+# Logging
+# ----------------------------
+
+# Log Level - Detail level for diagnostic logs
+# Options: ERROR, WARN, INFO, DEBUG
+# Default: INFO
+log.level=INFO
+
+# Log File - Path where diagnostic logs are written
+# Default: /tmp/diagnostics.log
+log.file=/tmp/diagnostics.log
+
+# ----------------------------
+# Advanced Settings
+# ----------------------------
+
+# Custom Device Path - Override the serial device path
+# Default is auto-detected by the diagnostics system
+# Example: /dev/ttyS0, /dev/ttyUSB0, COM1
+# device.path=/dev/ttyS0
+
+# Custom Baud Rate Override - Uncomment to force a specific baud rate
+# Overrides the baudrate setting above
+# baudrate.override=115200
+
+# ----------------------------
+# Test Mode
+# ----------------------------
+
+# Test Mode - Run diagnostics in test mode (simulated peripherals)
+# Options: true, false
+# If true, uses software simulation instead of real hardware
+# Useful for development and automated testing
+test.mode=false
+
+# Test Data Path - Path to test data files for test mode
+# test.data.path=/media/usb/test_data/

@@ -1,0 +1,189 @@
+# monitoring/alerts/service_health.yaml
+# Prometheus Alert Rules - Service Health Monitoring
+#
+# These alerts monitor service availability, resource usage,
+# and overall system health.
+#
+# Usage:
+#   Prometheus configuration should include this file in the rule_files section
+#
+#   rule_files:
+#     - "alerts/transaction_sla.yaml"
+#     - "alerts/service_health.yaml"
+
+groups:
+  - name: service_health_alerts
+    interval: 30s
+    rules:
+      # Alert: Service down
+      - alert: ServiceDown
+        expr: |
+          up{job="pos-services"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: pos-engineering
+          component: "{{ $labels.app }}"
+        annotations:
+          summary: "Service {{ $labels.app }} is down"
+          description: |
+            Service {{ $labels.app }} has been unreachable for 1 minute.
+            This is a critical outage requiring immediate attention.
+            Please check the service logs and pod status.
+
+      # Alert: High CPU usage
+      - alert: HighCPUUsage
+        expr: |
+          rate(container_cpu_usage_seconds_total{namespace="pos-test", container!=""}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.container }}"
+        annotations:
+          summary: "High CPU usage on {{ $labels.container }}"
+          description: |
+            CPU usage on {{ $labels.container }} is {{ printf "%.2f" $value }}% (threshold: 80%)
+            This indicates resource contention.
+            Consider increasing CPU limits or scaling horizontally.
+
+      # Alert: Critical CPU usage
+      - alert: CriticalCPUUsage
+        expr: |
+          rate(container_cpu_usage_seconds_total{namespace="pos-test", container!=""}[5m]) * 100 > 95
+        for: 3m
+        labels:
+          severity: critical
+          team: pos-engineering
+          component: "{{ $labels.container }}"
+        annotations:
+          summary: "CRITICAL: High CPU usage on {{ $labels.container }}"
+          description: |
+            CPU usage on {{ $labels.container }} is {{ printf "%.2f" $value }}% (threshold: 95%)
+            The service is at risk of becoming unresponsive.
+            Immediate scaling required.
+
+      # Alert: High memory usage
+      - alert: HighMemoryUsage
+        expr: |
+          (container_memory_working_set_bytes{namespace="pos-test", container!=""} / container_spec_memory_limit_bytes{namespace="pos-test", container!=""}) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.container }}"
+        annotations:
+          summary: "High memory usage on {{ $labels.container }}"
+          description: |
+            Memory usage on {{ $labels.container }} is {{ printf "%.2f" $value }}% of limit (threshold: 80%)
+            This indicates memory pressure.
+            Consider increasing memory limits or checking for memory leaks.
+
+      # Alert: Pod restarting frequently
+      - alert: PodRestarting
+        expr: |
+          rate(kube_pod_container_status_restarts_total{namespace="pos-test"}[15m]) * 60 * 5 > 1
+        for: 10m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "{{ $labels.container }}"
+        annotations:
+          summary: "Pod {{ $labels.pod }} is restarting frequently"
+          description: |
+            Pod {{ $labels.pod }} has restarted more than 5 times in 15 minutes.
+            This indicates instability.
+            Please check pod logs and events.
+
+      # Alert: Worker pods not scaling
+      - alert: WorkerPodsNotScaling
+        expr: |
+          kube_deployment_status_replicas_available{deployment="pos-worker"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "pos-worker"
+        annotations:
+          summary: "POS worker pods are not scaling"
+          description: |
+            No POS worker pods are available.
+            This means load testing cannot proceed.
+            Check the worker deployment status and HPA configuration.
+
+      # Alert: Insufficient worker pods
+      - alert: InsufficientWorkerPods
+        expr: |
+          kube_deployment_status_replicas_available{deployment="pos-worker"} < 3
+        for: 10m
+        labels:
+          severity: warning
+          team: pos-engineering
+          component: "pos-worker"
+        annotations:
+          summary: "Insufficient POS worker pods"
+          description: |
+            Only {{ printf "%.0f" $value }} POS worker pods are available.
+            This may result in under-provisioned load testing.
+            Consider adjusting HPA thresholds.
+
+      # Alert: Disk space low
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+        annotations:
+          summary: "Low disk space on node {{ $labels.node }}"
+          description: |
+            Disk space on {{ $labels.node }} is {{ printf "%.2f" $value }}% available (threshold: 10%)
+            This may impact logging and test results.
+            Clean up old logs and artifacts.
+
+      # Alert: Pods pending (scheduling issues)
+      - alert: PodsPending
+        expr: |
+          kube_pod_status_phase{phase="Pending", namespace="pos-test"} > 0
+        for: 5m
+        labels:
+          severity: warning
+          team: pos-engineering
+        annotations:
+          summary: "Pods are pending in pos-test namespace"
+          description: |
+            {{ printf "%.0f" $value }} pods are in Pending state.
+            This may indicate resource constraints or scheduling issues.
+            Check node resources and pod requirements.
+
+      # Alert: Service not ready
+      - alert: ServiceNotReady
+        expr: |
+          kube_endpoint_address_not_ready{namespace="pos-test"} > 0
+        for: 2m
+        labels:
+          severity: warning
+          team: pos-engineering
+        annotations:
+          summary: "Service endpoints are not ready"
+          description: |
+            Some service endpoints in pos-test namespace are not ready.
+            This may affect service availability.
+            Check pod readiness probes.
+
+      # Alert: Payment gateway mock unavailable
+      - alert: PaymentGatewayUnavailable
+        expr: |
+          up{app="payment-gateway"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: pos-engineering
+          component: payment-gateway
+        annotations:
+          summary: "Payment gateway mock is unavailable"
+          description: |
+            The mock payment gateway service is down.
+            This will prevent all transaction processing.
+            Restart the payment-gateway deployment immediately.
