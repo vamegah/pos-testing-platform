@@ -201,6 +201,61 @@ This document tracks all identified risks for the POS Cloud-Native & Hardware Te
 | P3 | UI-011 — Printer status | Add status transition tests |
 | P3 | UI-012 — Localization | Maintain locale files |
 
+# docs/test-strategy/risk_mitigation_log.md
+# Add to Section 3.8: Architecture-Specific Risks
+
+### 3.8 Architecture-Specific Risks
+
+| ID | Risk | Impact | Likelihood | Severity | Mitigation Strategy | Owner | Status |
+|----|------|--------|------------|----------|---------------------|-------|--------|
+| ARCH-001 | **API Gateway as a single point of failure** | High | Medium | **High** | Implement circuit breaker pattern; test failover scenarios; use health checks and auto-recovery | DevOps | Active |
+| ARCH-002 | **Cache staleness causing wrong price charged** | High | Medium | **High** | Configure aggressive TTL; implement cache invalidation on price changes; test price consistency | Dev Lead | Active |
+| ARCH-003 | **ERP export schema drift** | Medium | High | **Medium** | Version export schema; validate against schema; test with known fixture batches | Dev Lead | Active |
+| ARCH-004 | **Commerce Scale Unit edge autonomy failure** | High | Low | **High** | Test edge-autonomy scenarios; validate cache fallback; implement retry and recovery | Dev Lead | Active |
+| ARCH-005 | **Correlation ID propagation failure** | Medium | Low | **Medium** | Validate correlation ID across all hops; test with missing header; implement audit logging | Dev Lead | Active |
+| ARCH-006 | **Loyalty points accrual/redemption desync** | Medium | Medium | **Medium** | Validate loyalty integration; test points consistency; implement reconciliation | Dev Lead | Active |
+| ARCH-007 | **Order state machine illegal transitions** | High | Low | **High** | Validate all transition paths; test illegal transitions; implement state validation | Dev Lead | Active |
+| ARCH-008 | **Hardware Station fault isolation failure** | High | Low | **High** | Test fault-isolation scenarios; validate one peripheral down doesn't block others | Dev Lead | Active |
+| ARCH-009 | **Card reader PIN entry security** | Critical | Low | **Critical** | Validate PIN entry flow; test PIN blocking; implement secure PIN handling | Security Lead | Active |
+| ARCH-010 | **Inventory oversell** | High | Low | **High** | Test oversell prevention; validate stock decrement; implement reservation system | Dev Lead | Active |
+| ARCH-011 | **Data Services persistence failure** | High | Low | **High** | Test write/read consistency; validate transaction persistence; implement recovery | Dev Lead | Active |
+| ARCH-012 | **Analytics event count mismatch** | Medium | Low | **Medium** | Test one event per completed sale; validate event count; implement monitoring | Dev Lead | Active |
+| ARCH-013 | **Mode switch (Modern POS vs Cloud POS) inconsistency** | Medium | Low | **Medium** | Test both modes; validate consistent totals; test mode switching | Dev Lead | Active |
+| ARCH-014 | **Store Manager override bypass** | High | Low | **High** | Validate manager PIN requirement; test override flows; implement audit logging | Dev Lead | Active |
+| ARCH-015 | **Golden Path test not covering all nodes** | High | Low | **High** | Review architecture traceability; validate all nodes covered; test with correlation ID | QA Lead | Active |
+
+---
+
+## 6. Architecture Risk Summary
+
+| Category | Active Risks | Resolved | Total |
+|----------|--------------|----------|-------|
+| API Gateway | 1 | 0 | 1 |
+| Cache/Data | 2 | 0 | 2 |
+| Edge/Commerce | 1 | 0 | 1 |
+| Tracing/Observability | 1 | 0 | 1 |
+| Third-Party Integrations | 2 | 0 | 2 |
+| State/Processing | 2 | 0 | 2 |
+| Hardware/Peripherals | 3 | 0 | 3 |
+| Testing Coverage | 3 | 0 | 3 |
+| **Total** | **15** | **0** | **15** |
+
+---
+
+## 7. Architecture Risk Mitigation Priorities
+
+| Priority | Risk | Action |
+|----------|------|--------|
+| P0 | ARCH-009 — Card reader PIN security | Implement secure PIN handling |
+| P0 | ARCH-001 — API Gateway SPOF | Implement circuit breaker and failover |
+| P0 | ARCH-015 — Golden Path coverage | Validate all nodes in traceability matrix |
+| P1 | ARCH-002 — Cache staleness | Configure TTL and invalidation |
+| P1 | ARCH-004 — Edge autonomy | Test failover scenarios |
+| P1 | ARCH-007 — Illegal transitions | Validate all transition paths |
+| P2 | ARCH-003 — ERP schema drift | Version schemas |
+| P2 | ARCH-006 — Loyalty desync | Implement reconciliation |
+| P2 | ARCH-011 — Persistence failure | Validate write/read consistency |
+
 ## 4. Risk Review Process
 
 ### 4.1 Review Frequency

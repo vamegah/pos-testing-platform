@@ -1,0 +1,3 @@
+# simulators/local-data-cache/requirements.txt
+
+Flask==2.3.3

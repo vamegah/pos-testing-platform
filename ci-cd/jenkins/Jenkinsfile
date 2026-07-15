@@ -120,16 +120,83 @@ pipeline {
                 echo '✅ Build complete'
             }
         }
+        // ci-cd/Jenkinsfile
+// Add architecture-conformance stage before PR stage
+
+        // ============================================================
+        // Architecture Conformance Stage (Required Check)
+        // ============================================================
+        stage('Architecture Conformance') {
+            when {
+                expression { params.PIPELINE_MODE in ['pr', 'nightly', 'full'] }
+            }
+            steps {
+                echo '🏛️ Running architecture conformance tests...'
+                
+                script {
+                    // Ensure services are running
+                    if (!params.SKIP_DEPLOY) {
+                        sh 'docker-compose up -d'
+                        sh 'sleep 10'
+                    }
+                    
+                    // Run architecture conformance tests
+                    dir('test-automation') {
+                        sh """
+                            mvn test \
+                                -Dgroups=architecture-conformance \
+                                -DPRICING_SERVICE_URL=${env.PRICING_URL} \
+                                -DPROMOTIONS_SERVICE_URL=${env.PROMOTIONS_URL} \
+                                -DTAX_SERVICE_URL=${env.TAX_URL} \
+                                -DPAYMENT_GATEWAY_URL=${env.PAYMENT_URL} \
+                                -DCOMMERCE_SCALE_UNIT_URL=${env.BASE_URL}:5012 \
+                                -DGATEWAY_URL=${env.BASE_URL}:5014 \
+                                -DINVENTORY_URL=${env.BASE_URL}:8085 \
+                                -DORDER_PROCESSING_URL=${env.BASE_URL}:8086 \
+                                -DCRM_URL=${env.BASE_URL}:8087 \
+                                -DDATA_SERVICES_URL=${env.BASE_URL}:8088 \
+                                -DLOYALTY_URL=${env.BASE_URL}:8089 \
+                                -DERP_URL=${env.BASE_URL}:8090 \
+                                -DHARDWARE_STATION_URL=${env.BASE_URL}:5011 \
+                                -DCARD_READER_URL=${env.BASE_URL}:5009 \
+                                -DCASH_DRAWER_URL=${env.BASE_URL}:5010
+                        """
+                    }
+                    
+                    // Copy results
+                    sh """
+                        cp -r test-automation/target/surefire-reports/*.xml ${RESULTS_DIR}/architecture/ || true
+                        cp -r test-automation/target/surefire-reports/*.html ${RESULTS_DIR}/architecture/ || true
+                    """
+                }
+                
+                echo '✅ Architecture conformance tests complete'
+            }
+            post {
+                always {
+                    junit testResults: 'test-automation/target/surefire-reports/*.xml', 
+                          allowEmptyResults: true
+                }
+                failure {
+                    echo '❌ Architecture conformance test failed! The Golden Path must pass.'
+                    // This is a required check, so fail the build
+                    error 'Architecture conformance check failed. Golden Path E2E test must pass.'
+                }
+            }
+        }
 
         // ============================================================
         // PR Stage: Fast smoke tests only
         // ============================================================
-        stage('PR Stage (Smoke Tests)') {
+                // ============================================================
+        // PR Stage: Fast smoke tests + architecture conformance
+        // ============================================================
+        stage('PR Stage (Smoke + Architecture)') {
             when {
                 expression { params.PIPELINE_MODE == 'pr' }
             }
             steps {
-                echo '🚀 Running PR smoke tests...'
+                echo '🚀 Running PR smoke tests and architecture conformance...'
                 
                 script {
                     // Start services if not skipped
@@ -138,38 +205,36 @@ pipeline {
                         sh 'sleep 10'
                     }
                     
-                    // Run only smoke-tagged tests
-                    dir('product-tests') {
-                        sh """
-                            mvn test \
-                                -Dgroups=smoke \
-                                -DPRICING_SERVICE_URL=${env.PRICING_URL} \
-                                -DPROMOTIONS_SERVICE_URL=${env.PROMOTIONS_URL} \
-                                -DTAX_SERVICE_URL=${env.TAX_URL} \
-                                -DPAYMENT_GATEWAY_URL=${env.PAYMENT_URL}
-                        """
-                    }
-                    
-                    // Also run API smoke tests
+                    // Run smoke tests AND architecture conformance
                     dir('test-automation') {
                         sh """
                             mvn test \
-                                -Dgroups=smoke \
+                                -Dgroups=smoke,architecture-conformance \
                                 -DPRICING_SERVICE_URL=${env.PRICING_URL} \
                                 -DPROMOTIONS_SERVICE_URL=${env.PROMOTIONS_URL} \
                                 -DTAX_SERVICE_URL=${env.TAX_URL} \
-                                -DPAYMENT_GATEWAY_URL=${env.PAYMENT_URL}
+                                -DPAYMENT_GATEWAY_URL=${env.PAYMENT_URL} \
+                                -DCOMMERCE_SCALE_UNIT_URL=${env.BASE_URL}:5012 \
+                                -DGATEWAY_URL=${env.BASE_URL}:5014 \
+                                -DINVENTORY_URL=${env.BASE_URL}:8085 \
+                                -DORDER_PROCESSING_URL=${env.BASE_URL}:8086 \
+                                -DCRM_URL=${env.BASE_URL}:8087 \
+                                -DDATA_SERVICES_URL=${env.BASE_URL}:8088 \
+                                -DLOYALTY_URL=${env.BASE_URL}:8089 \
+                                -DERP_URL=${env.BASE_URL}:8090 \
+                                -DHARDWARE_STATION_URL=${env.BASE_URL}:5011 \
+                                -DCARD_READER_URL=${env.BASE_URL}:5009 \
+                                -DCASH_DRAWER_URL=${env.BASE_URL}:5010
                         """
                     }
                     
                     // Copy results
                     sh """
-                        cp -r product-tests/target/surefire-reports/*.xml ${RESULTS_DIR}/api/ || true
                         cp -r test-automation/target/surefire-reports/*.xml ${RESULTS_DIR}/api/ || true
                     """
                 }
                 
-                echo '✅ PR smoke tests complete'
+                echo '✅ PR smoke tests and architecture conformance complete'
             }
             post {
                 always {
@@ -177,6 +242,9 @@ pipeline {
                 }
                 always {
                     sh 'docker-compose down || true'
+                }
+                failure {
+                    echo '❌ PR checks failed (architecture conformance is required)'
                 }
             }
         }
@@ -226,7 +294,7 @@ stage('Flaky Tests (Quarantine)') {
         script {
             echo '⚠️ Running flaky tests (quarantined, non-blocking)...'
             
-            dir('product-tests') {
+            dir('test-automation') {
                 sh """
                     mvn test \
                         -Dgroups=flaky \

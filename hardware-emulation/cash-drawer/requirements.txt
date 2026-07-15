@@ -1,0 +1,3 @@
+# hardware-emulation/cash-drawer/requirements.txt
+
+Flask==2.3.3

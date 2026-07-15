@@ -174,3 +174,26 @@ REQ-UI-013,Localization & Accessibility,Locale switching (EN/ES/FR), touch targe
 REQ-UI-014,UI Suite in testng.xml,UI tests included in test suite,TC_UI_014,Automated,Automated,test-automation/src/test/resources/testng.xml,UI Requirement,High,2026-01-15
 REQ-UI-015,UI Stage in Jenkins,UI tests run in CI/CD pipeline,TC_UI_015,Automated,Automated,ci-cd/Jenkinsfile,UI Requirement,High,2026-01-15
 REQ-UI-016,Chrome in Dockerfile,UI tests run headlessly in container,TC_UI_016,Automated,Automated,ci-cd/Dockerfile.test,UI Requirement,High,2026-01-15
+
+# test-management/traceability/requirements_traceability_matrix.csv
+# Add Phase 23 rows to the existing CSV file
+
+# ============================================================
+# PHASE 23: CLOSE ARCHITECTURE GAPS
+# ============================================================
+REQ-ARCH-001,Card Reader Peripheral,Physical EMV dip/tap/swipe + PIN-entry device protocol,TC_ARCH_001,Automated,Automated,hardware-emulation/card-reader/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-002,Cash Drawer Peripheral,Open/close signal fired only on completed cash tender with left-open alert,TC_ARCH_002,Automated,Automated,hardware-emulation/cash-drawer/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-003,Hardware Station,Mediator the POS App calls to fan out to peripherals with fault isolation,TC_ARCH_003,Automated,Automated,simulators/hardware-station/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-004,Commerce Scale Unit,Store/edge-tier facade aggregating pricing/promotions/tax with edge autonomy,TC_ARCH_004,Automated,Automated,simulators/commerce-scale-unit/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-005,Local Data Cache,Offline cache with cache-population, staleness/TTL, reconciliation,TC_ARCH_005,Automated,Automated,simulators/local-data-cache/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-006,API Gateway,Routing + mock auth + rate-limiting + event pub/sub,TC_ARCH_006,Automated,Automated,simulators/gateway/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-007,Inventory Microservice,Stock lookup + decrement-on-sale with oversell prevention,TC_ARCH_007,Automated,Automated,simulators/pos-services/inventory/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-008,Order Processing Microservice,Order lifecycle state machine with illegal-transition detection,TC_ARCH_008,Automated,Automated,simulators/pos-services/order-processing/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-009,CRM Microservice,Customer profile lookup/creation tied to transactions,TC_ARCH_009,Automated,Automated,simulators/pos-services/crm/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-010,Data Services Layer,Transactional persistence + analytics data-lake sink,TC_ARCH_010,Automated,Automated,simulators/data-services/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-011,Loyalty Program Mock,Points accrual/redemption as third-party boundary,TC_ARCH_011,Automated,Automated,simulators/third-party-mocks/loyalty/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-012,ERP Integration Mock,End-of-day batch export of transactions,TC_ARCH_012,Automated,Automated,simulators/third-party-mocks/erp/,Architecture Conformance,High,2026-07-14
+REQ-ARCH-013,Connectivity Mode Test,Modern POS vs Cloud POS mode distinction (C1 vs D1),TC_ARCH_013,Automated,Automated,test-automation/.../architecture/ConnectivityModeTest.java,Architecture Conformance,High,2026-07-14
+REQ-ARCH-014,Store Manager Role,Manager-PIN override for price change, void approval, EOD close-out,TC_ARCH_014,Automated,Automated,test-automation/.../ui/StoreManagerRoleUiTest.java,Architecture Conformance,High,2026-07-14
+REQ-ARCH-015,Golden Path E2E,End-to-end trace through all nodes with correlation ID,TC_ARCH_015,Automated,Automated,test-automation/.../architecture/GoldenPathArchitectureE2ETest.java,Architecture Conformance,Critical,2026-07-14
+REQ-ARCH-016,Architecture Traceability Matrix,All nodes and arrows mapped to test classes,TC_ARCH_016,Manual,N/A,docs/architecture/reference_architecture_traceability.md,Architecture Conformance,High,2026-07-14
