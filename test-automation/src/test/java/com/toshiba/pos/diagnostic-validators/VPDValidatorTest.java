@@ -182,7 +182,7 @@ public class VPDValidatorTest extends BaseTest {
      * When: The payload is validated
      * Then: All expected fields should be present and well-formed
      */
-    @Test(description = "Valid VPD payload passes validation")
+    @Test(description = "Valid VPD payload passes validation", groups = {"diagnostic", "regression", "product:all"})
     public void testValidVPDPayload() {
         logger.info("Testing valid VPD payload validation...");
         
@@ -222,7 +222,7 @@ public class VPDValidatorTest extends BaseTest {
      * When: The payload is validated
      * Then: A validation failure should be reported
      */
-    @Test(description = "Missing serial number fails validation")
+    @Test(description = "Missing serial number fails validation", groups = {"diagnostic", "regression", "negative", "product:all"})
     public void testMissingSerialNumber() {
         logger.info("Testing missing serial number validation...");
         
@@ -257,7 +257,7 @@ public class VPDValidatorTest extends BaseTest {
      * When: The payload is validated
      * Then: A validation failure should be reported
      */
-    @Test(description = "Invalid serial number format fails validation")
+    @Test(description = "Invalid serial number format fails validation", groups = {"diagnostic", "regression", "negative", "product:all"})
     public void testInvalidSerialFormat() {
         logger.info("Testing invalid serial number format...");
         
@@ -292,7 +292,7 @@ public class VPDValidatorTest extends BaseTest {
      * When: The payload is validated
      * Then: A validation failure should be reported
      */
-    @Test(description = "Invalid firmware version fails validation")
+    @Test(description = "Invalid firmware version fails validation", groups = {"diagnostic", "regression", "negative", "product:all"})
     public void testInvalidFirmwareVersion() {
         logger.info("Testing invalid firmware version...");
         
@@ -327,7 +327,7 @@ public class VPDValidatorTest extends BaseTest {
      * When: The payload is validated
      * Then: A validation failure should be reported
      */
-    @Test(description = "Invalid MAC address fails validation")
+    @Test(description = "Invalid MAC address fails validation", groups = {"diagnostic", "regression", "negative", "product:all"})
     public void testInvalidMACAddress() {
         logger.info("Testing invalid MAC address...");
         
@@ -439,7 +439,7 @@ public class VPDValidatorTest extends BaseTest {
      * When: The feature flags are parsed
      * Then: They should be correctly interpreted as a set of capabilities
      */
-    @Test(description = "Feature flags are correctly parsed")
+    @Test(description = "Feature flags are correctly parsed", groups = {"diagnostic", "regression", "product:all"})
     public void testFeatureFlagsParsing() {
         logger.info("Testing feature flags parsing...");
         
@@ -480,7 +480,7 @@ public class VPDValidatorTest extends BaseTest {
      * 
      * This demonstrates the "real-machine-less evaluation" approach
      */
-    @Test(description = "VPD payload from JSON fixture passes validation")
+    @Test(description = "VPD payload from JSON fixture passes validation", groups = {"diagnostic", "regression", "product:all"})
     public void testFromJsonFixture() {
         logger.info("Testing VPD validation from JSON fixture...");
         

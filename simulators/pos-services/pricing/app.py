@@ -6,9 +6,11 @@ Returns price for a given SKU. Mock-only — no real pricing data.
 """
 
 import os
+import sys
 import json
 import logging
 from flask import Flask, request, jsonify, abort
+
 
 # Configure logging
 logging.basicConfig(
@@ -18,6 +20,34 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__), "../../framework-core/src/main/resources/tracing"
+    )
+)
+
+from trace_utils import get_trace_id_from_request, add_trace_header
+
+@app.before_request
+def before_request():
+    g.trace_id = get_trace_id_from_request(request)
+    g.start_time = time.time()
+    logger.info(f"[{g.trace_id}] Request: {request.method} {request.path}")
+
+
+@app.after_request
+def after_request(response):
+    if hasattr(g, "trace_id"):
+        add_trace_header(response, g.trace_id)
+        if hasattr(g, "start_time"):
+            duration = (time.time() - g.start_time) * 1000
+            logger.info(
+                f"[{g.trace_id}] Response: {response.status_code} in {duration:.2f}ms"
+            )
+    return response
+
 
 # Mock product catalog
 # Format: SKU -> { "sku": str, "price": float, "name": str }

@@ -416,6 +416,31 @@ def get_member_history(customer_id: str):
         200,
     )
 
+# simulators/third-party-mocks/loyalty/simulator.py
+# Add reset endpoint
+
+
+@app.route("/test/reset", methods=["POST"])
+def reset_state():
+    """Reset loyalty state to initial."""
+    global members, redemption_codes, transaction_history
+
+    members = {}
+    redemption_codes = {}
+    transaction_history = []
+
+    logger.info("Loyalty state reset to initial")
+    return (
+        jsonify(
+            {
+                "status": "reset",
+                "service": "loyalty",
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+            }
+        ),
+        200,
+    )
+
 
 @app.route("/loyalty/test/scenario", methods=["POST"])
 def test_scenario():

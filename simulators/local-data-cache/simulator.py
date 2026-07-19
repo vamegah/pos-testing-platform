@@ -513,6 +513,34 @@ def get_sync_history():
             200,
         )
 
+# simulators/local-data-cache/simulator.py
+# Add reset endpoint
+
+
+@app.route("/test/reset", methods=["POST"])
+def reset_state():
+    """Reset cache state to initial."""
+    # Clear tables
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM catalog")
+        cursor.execute("DELETE FROM regions")
+        cursor.execute("DELETE FROM sync_history")
+        cursor.execute("DELETE FROM pending_changes")
+        conn.commit()
+
+    logger.info("Cache state reset to initial")
+    return (
+        jsonify(
+            {
+                "status": "reset",
+                "service": "local-data-cache",
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+            }
+        ),
+        200,
+    )
+
 
 @app.route("/local-cache/test/scenarios", methods=["POST"])
 def test_scenarios():

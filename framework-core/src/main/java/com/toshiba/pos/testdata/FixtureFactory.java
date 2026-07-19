@@ -174,6 +174,56 @@ public class FixtureFactory {
         return PAYMENT_METHODS.get(random.nextInt(PAYMENT_METHODS.size()));
     }
 
+     /**
+     * Generate a standard test basket with a known set of SKUs.
+     * Used for consistent testing across all test classes.
+     */
+    public List<BasketItem> getStandardTestBasket() {
+        return generateBasket(Arrays.asList("SKU-1001", "SKU-1002", "SKU-1005"));
+    }
+
+    /**
+     * Get a standard SKU for testing.
+     */
+    public String getStandardSku() {
+        return "SKU-1001";
+    }
+
+    /**
+     * Get a standard region for testing.
+     */
+    public String getStandardRegion() {
+        return "CA";
+    }
+
+    /**
+     * Get a standard test card number.
+     */
+    public String getStandardCard() {
+        return "4111111111111111";
+    }
+
+    /**
+     * Get a declined test card number.
+     */
+    public String getDeclinedCard() {
+        return "4111111111110000";
+    }
+
+    /**
+     * Get a standard customer ID for testing.
+     */
+    public String getStandardCustomerId() {
+        return "CUST-TEST-001";
+    }
+
+    /**
+     * Generate a standard product fixture for a specific product.
+     */
+    public ProductFixture getStandardProductFixture(String productId) {
+        return generateProductFixture(productId);
+    }
+
     /**
      * Generate a random customer.
      */

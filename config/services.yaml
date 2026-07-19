@@ -1,0 +1,199 @@
+# config/services.yaml
+# Service Registry — Single Source of Truth for all service ports/base-URLs
+#
+# This file defines every service in the POS test platform.
+# Changing a port in one place (here) is sufficient — no hard-coded port survives elsewhere.
+#
+# Usage:
+#   - Read this file to discover service URLs
+#   - docker-compose.yml references these ports
+#   - All test classes read from this registry
+#   - All simulators read from this registry
+
+version: "1.0"
+description: "POS Test Platform Service Registry"
+
+services:
+  # ============================================================
+  # Phase 1: Mocked Backend Services
+  # ============================================================
+  pricing-service:
+    name: "Pricing Service"
+    port: 8081
+    host: "localhost"
+    health_check: "/health"
+    description: "Returns price for SKU"
+
+  promotions-service:
+    name: "Promotions Service"
+    port: 8082
+    host: "localhost"
+    health_check: "/health"
+    description: "Returns applicable discounts"
+
+  tax-service:
+    name: "Tax Service"
+    port: 8083
+    host: "localhost"
+    health_check: "/health"
+    description: "Returns tax for subtotal+region"
+
+  payment-gateway:
+    name: "Payment Gateway"
+    port: 8084
+    host: "localhost"
+    health_check: "/health"
+    description: "Mock payment gateway"
+
+  # ============================================================
+  # Phase 23: Architecture Components
+  # ============================================================
+  card-reader:
+    name: "Card Reader"
+    port: 5009
+    host: "localhost"
+    health_check: "/health"
+    description: "EMV card reader simulator"
+
+  cash-drawer:
+    name: "Cash Drawer"
+    port: 5010
+    host: "localhost"
+    health_check: "/health"
+    description: "Cash drawer simulator"
+
+  hardware-station:
+    name: "Hardware Station"
+    port: 5011
+    host: "localhost"
+    health_check: "/health"
+    description: "Hardware station mediator"
+
+  commerce-scale-unit:
+    name: "Commerce Scale Unit"
+    port: 5012
+    host: "localhost"
+    health_check: "/health"
+    description: "Edge-tier commerce facade"
+
+  local-data-cache:
+    name: "Local Data Cache"
+    port: 5013
+    host: "localhost"
+    health_check: "/health"
+    description: "Offline SQLite cache"
+
+  api-gateway:
+    name: "API Gateway"
+    port: 5014
+    host: "localhost"
+    health_check: "/health"
+    description: "Gateway with auth + rate-limiting"
+
+  inventory:
+    name: "Inventory Service"
+    port: 8085
+    host: "localhost"
+    health_check: "/health"
+    description: "Stock lookup and decrement"
+
+  order-processing:
+    name: "Order Processing"
+    port: 8086
+    host: "localhost"
+    health_check: "/health"
+    description: "Order lifecycle state machine"
+
+  crm:
+    name: "CRM Service"
+    port: 8087
+    host: "localhost"
+    health_check: "/health"
+    description: "Customer profile management"
+
+  data-services:
+    name: "Data Services"
+    port: 8088
+    host: "localhost"
+    health_check: "/health"
+    description: "Persistence and analytics"
+
+  loyalty:
+    name: "Loyalty Program"
+    port: 8089
+    host: "localhost"
+    health_check: "/health"
+    description: "Third-party loyalty mock"
+
+  erp:
+    name: "ERP Integration"
+    port: 8090
+    host: "localhost"
+    health_check: "/health"
+    description: "Third-party ERP mock"
+
+  # ============================================================
+  # Phase 12: Product Profiles
+  # ============================================================
+  elera:
+    name: "ELERA Simulator"
+    port: 5000
+    host: "localhost"
+    health_check: "/health"
+    description: "ELERA platform profile"
+
+  mxp-vision-kiosk:
+    name: "MxP Vision Kiosk"
+    port: 5001
+    host: "localhost"
+    health_check: "/health"
+    description: "Vision Kiosk profile"
+
+  mxp-smart-hybrid:
+    name: "MxP SMART Hybrid"
+    port: 5002
+    host: "localhost"
+    health_check: "/health"
+    description: "SMART Hybrid profile"
+
+  mxp-smart-wall:
+    name: "MxP SMART Wall"
+    port: 5003
+    host: "localhost"
+    health_check: "/health"
+    description: "SMART Wall profile"
+
+  mxp-smart-wing:
+    name: "MxP SMART Wing"
+    port: 5004
+    host: "localhost"
+    health_check: "/health"
+    description: "SMART Wing profile"
+
+  self-checkout-7:
+    name: "Self Checkout System 7"
+    port: 5005
+    host: "localhost"
+    health_check: "/health"
+    description: "SCS7 profile"
+
+  tcx-display:
+    name: "TCx Display"
+    port: 5006
+    host: "localhost"
+    health_check: "/health"
+    description: "TCx Display profile"
+
+  tcx-printer-single:
+    name: "TCx Single Printer"
+    port: 5007
+    host: "localhost"
+    health_check: "/health"
+    description: "Single station printer"
+
+  tcx-printer-dual:
+    name: "TCx Dual Printer"
+    port: 5008
+    host: "localhost"
+    health_check: "/health"
+    description: "Dual station printer"

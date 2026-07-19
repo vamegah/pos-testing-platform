@@ -359,6 +359,87 @@ def decrement_stock(sku: str):
         200,
     )
 
+# simulators/pos-services/inventory/simulator.py
+# Add reset endpoint
+
+
+@app.route("/test/reset", methods=["POST"])
+def reset_state():
+    """Reset inventory state to initial values."""
+    global inventory, stock_change_history
+
+    # Reset inventory to initial state
+    inventory = {
+        "SKU-1001": {
+            "stock": 100,
+            "name": "Milk (1 gal)",
+            "price": 2.99,
+            "reserved": 0,
+        },
+        "SKU-1002": {
+            "stock": 50,
+            "name": "Bread (white)",
+            "price": 1.49,
+            "reserved": 0,
+        },
+        "SKU-1003": {"stock": 75, "name": "Eggs (dozen)", "price": 3.99, "reserved": 0},
+        "SKU-1004": {
+            "stock": 30,
+            "name": "Chicken Breast (lb)",
+            "price": 4.50,
+            "reserved": 0,
+        },
+        "SKU-1005": {
+            "stock": 200,
+            "name": "Apple (each)",
+            "price": 0.99,
+            "reserved": 0,
+        },
+        "SKU-1006": {
+            "stock": 60,
+            "name": "Orange Juice (64oz)",
+            "price": 1.99,
+            "reserved": 0,
+        },
+        "SKU-1007": {
+            "stock": 40,
+            "name": "Cheese (cheddar, 8oz)",
+            "price": 5.49,
+            "reserved": 0,
+        },
+        "SKU-1008": {
+            "stock": 80,
+            "name": "Butter (salted, 1lb)",
+            "price": 2.29,
+            "reserved": 0,
+        },
+        "SKU-1009": {
+            "stock": 45,
+            "name": "Cereal (family size)",
+            "price": 3.29,
+            "reserved": 0,
+        },
+        "SKU-1010": {
+            "stock": 25,
+            "name": "Coffee (ground, 12oz)",
+            "price": 7.99,
+            "reserved": 0,
+        },
+    }
+    stock_change_history = []
+
+    logger.info("Inventory state reset to initial")
+    return (
+        jsonify(
+            {
+                "status": "reset",
+                "service": "inventory",
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+            }
+        ),
+        200,
+    )
+
 
 @app.route("/inventory/stock/<sku>/release-reserved", methods=["POST"])
 def release_reserved(sku: str):

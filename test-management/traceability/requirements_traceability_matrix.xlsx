@@ -96,6 +96,49 @@ REQ-PROD-008,TCx Single Station Printer Profile,Single virtual print station wit
 REQ-PROD-009,TCx Dual Station Printer Profile,Two independent virtual print stations with independent faults,TC_PRINTER_DUAL_001,Automated,Automated,test-automation/.../e2e/TcxPrinterDualE2ETest.java,Product Requirement,High,2026-01-15
 REQ-PROD-010,Supported OS Matrix,OS family targets for each product profile,TC_OS_001,Manual,N/A,docs/environment-setup/supported_os_matrix.md,Product Requirement,Medium,2026-01-15
 
+# test-management/traceability/requirements_traceability_matrix.csv
+# Update E2E test rows to point to ProductE2EEngine instead of deleted classes
+
+# Keep ELERA E2E rows (illustrative example)
+REQ-E2E-001,ELERA POS Mode Sale,Complete transaction in POS mode with consistent total,TC_ELERA_001,Automated,Automated,"test-automation/.../e2e/EleraE2ETest.java (illustrative)",Product E2E,High,2026-07-14
+REQ-E2E-002,ELERA Self-Service Mode Sale,Complete transaction in Self-Service mode with consistent total,TC_ELERA_002,Automated,Automated,"test-automation/.../e2e/EleraE2ETest.java (illustrative)",Product E2E,High,2026-07-14
+REQ-E2E-003,ELERA Mode Consistency,Same basket produces same total across both modes,TC_ELERA_003,Automated,Automated,"test-automation/.../e2e/EleraE2ETest.java (illustrative)",Product E2E,High,2026-07-14
+REQ-E2E-004,ELERA Produce Recognition,Mock vision recognition with confidence scoring,TC_ELERA_004,Automated,Automated,"test-automation/.../e2e/EleraE2ETest.java (illustrative)",Product E2E,Medium,2026-07-14
+
+# All other E2E tests repointed to ProductE2EEngine (Phase 18.3)
+REQ-E2E-005,Vision Kiosk Card Payment,Bulk scan → weight check → card payment happy path,TC_VISION_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-006,Vision Kiosk NFC Payment,Bulk scan → weight check → NFC payment happy path,TC_VISION_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-007,Vision Kiosk Biometric Payment,Bulk scan → weight check → biometric payment happy path,TC_VISION_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-008,Vision Kiosk Weight Mismatch,Weight mismatch triggers assist event (not silent pass),TC_VISION_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-009,Vision Kiosk NFC Declined,Declined NFC card returns 402 error,TC_VISION_005,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-010,SMART Hybrid Mode Switch,Start self-service → switch to assisted → complete sale,TC_HYBRID_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-011,SMART Hybrid Assisted Override,Assisted mode override feature works,TC_HYBRID_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-012,SMART Hybrid Self-Service Reject,Self-service mode rejects override,TC_HYBRID_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-013,SMART Hybrid Mode Toggle,Mode toggle endpoint works correctly,TC_HYBRID_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-014,SMART Wall No Scale Sale,Full sale completes without scale peripheral,TC_WALL_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-015,SMART Wall Scale Rejected,Scale operations rejected with clear error,TC_WALL_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-016,SMART Wall Compact Printer,Compact printer receipt uses 3-inch format,TC_WALL_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-017,SMART Wall Multiple Items,Multi-item sale with quantities,TC_WALL_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-018,SMART Wing Full Config,Sale with all peripherals enabled,TC_WING_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-019,SMART Wing Minimal Config,Sale with scanner + printer only,TC_WING_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-020,SMART Wing Same Basket,Total consistent across different configurations,TC_WING_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-021,SMART Wing Peripheral Toggle,Toggle endpoint changes peripheral state correctly,TC_WING_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-022,SCS7 Unattended Happy Path,Multi-item basket → scan → bagging → payment → receipt,TC_SCS7_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-023,SCS7 Attended Override,Weight mismatch → attended override → complete sale,TC_SCS7_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-024,SCS7 Unexpected Item,Unexpected item in bagging area triggers assist event,TC_SCS7_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-025,SCS7 Receipt Generation,Receipt contains all items and correct totals,TC_SCS7_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-026,TCx Display Matrix,All supported size/orientation combos accepted,TC_DISPLAY_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-027,TCx Display Bad Combo,21.5" portrait combo rejected,TC_DISPLAY_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-028,TCx Display Capabilities,Capabilities endpoint returns matrix correctly,TC_DISPLAY_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-029,TCx Display Validation History,Validation history tracks all attempts,TC_DISPLAY_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,Medium,2026-07-14
+REQ-E2E-030,TCx Printer Single Happy Path,Sale completes and receipt written to virtual port,TC_PRINTER_SINGLE_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-031,TCx Printer Single Paper-Out,Paper-out error surfaced, transaction not lost,TC_PRINTER_SINGLE_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-032,TCx Printer Single Retry,Retry succeeds after paper restoration,TC_PRINTER_SINGLE_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-033,TCx Printer Dual Both Stations,Sale prints to both stations successfully,TC_PRINTER_DUAL_001,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-034,TCx Printer Dual Customer Jam,Customer jam doesn't block merchant,TC_PRINTER_DUAL_002,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-035,TCx Printer Dual Merchant Jam,Merchant jam doesn't block customer,TC_PRINTER_DUAL_003,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+REQ-E2E-036,TCx Printer Dual Transaction,Transaction completes with one station jammed,TC_PRINTER_DUAL_004,Automated,Automated,"framework-core/.../engine/ProductE2EEngine.java (generic engine)",Product E2E,High,2026-07-14
+
 # ============================================================
 # PHASE 13: END-TO-END SCENARIOS PER PRODUCT
 # ============================================================
@@ -154,6 +197,16 @@ REQ-UI-001,Selenium WebDriver Integration,UI automation dependencies added to Ma
 REQ-UI-002,Kiosk UI Simulator,Static HTML/CSS/JS harness with 5 screen states,TC_UI_002,Automated,Automated,simulators/kiosk-ui-harness/,UI Requirement,High,2026-01-15
 REQ-UI-003,BaseKioskPage Page Object,Common Selenium page object with tap helper and assertions,TC_UI_003,Automated,Automated,test-automation/.../ui/BaseKioskPage.java,UI Requirement,High,2026-01-15
 
+# UI Test rows repointed to generic UI engine (or kept illustrative)
+REQ-UI-004,ELERA UI — POS vs Self-Service Modes,Different toolbars/element sets per mode,TC_UI_004,Automated,Automated,test-automation/.../ui/EleraUiTest.java (illustrative),UI Requirement,High,2026-07-14
+REQ-UI-005,Vision Kiosk UI — Bulk Scan Sequence,Place items → bulk-scan results → weight-mismatch assist → payment,TC_UI_005,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-006,SMART Hybrid UI — Mode Switch,Self-service ↔ assisted mode toggle flips layout,TC_UI_006,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-007,SMART Wall UI — Reduced Peripherals,Scale widget hidden, compact layout,TC_UI_007,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-008,SMART Wing UI — Peripheral Toggling,Icons appear/disappear per combination fixture,TC_UI_008,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-009,SCS7 UI — Form Factor Profiles,Cash-recycling/cashless/kiosk payment controls,TC_UI_009,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-010,TCx Display UI — Responsive Layout,No overflow/clipping across size/orientation matrix,TC_UI_010,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-011,TCx Single Printer UI — Printing Status,"Printing receipt…" status, paper-out alert,TC_UI_011,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
+REQ-UI-012,TCx Dual Printer UI — Independent Status,Two independent status indicators, one fault one success,TC_UI_012,Automated,Automated,framework-core/.../engine/ProductE2EEngine.java (generic engine),UI Requirement,High,2026-07-14
 # ============================================================
 # PHASE 16: PER-PRODUCT UI SCENARIOS
 # ============================================================

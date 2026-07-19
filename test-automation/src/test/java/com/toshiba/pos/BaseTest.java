@@ -68,6 +68,29 @@ public class BaseTest {
         
         logConfiguration();
     }
+
+    // test-automation/src/test/java/com/toshiba/pos/BaseTest.java
+// Add service registry loading
+
+    /**
+     * Load service URLs from environment or registry.
+     * Falls back to environment variables with defaults from services.yaml.
+     */
+    protected String getServiceUrl(String serviceName, int defaultPort) {
+        String envKey = serviceName.toUpperCase().replace("-", "_") + "_URL";
+        String value = getEnv(envKey, null);
+        if (value != null) {
+            return value;
+        }
+        // Fallback to localhost with default port
+        return "http://localhost:" + defaultPort;
+    }
+
+    // Update all service URL initialization to use this method
+    pricingServiceUrl = getServiceUrl("pricing-service", 8081);
+    promotionsServiceUrl = getServiceUrl("promotions-service", 8082);
+    taxServiceUrl = getServiceUrl("tax-service", 8083);
+    paymentGatewayUrl = getServiceUrl("payment-gateway", 8084);
     
     /**
      * Log the test configuration for debugging.

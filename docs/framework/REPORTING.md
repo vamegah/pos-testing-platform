@@ -56,6 +56,27 @@ This document describes the test reporting and historical trend analysis capabil
 | **Flaky Trend** | HTML + JSON | Flaky test failure rates over time |
 
 ---
+# docs/framework/REPORTING.md
+# Update reporting documentation
+
+## 4. Reporting Stack
+
+| Tool | Purpose | Artifact Path |
+|------|---------|---------------|
+| **Allure TestNG** | Test execution reporting | `target/allure-results/` |
+| **Allure Maven Plugin** | Report generation | `target/allure-report/` |
+| **Jenkins Allure Plugin** | CI/CD publishing | Published in Jenkins UI |
+| **Surefire XML** | Fallback/legacy reporting | `target/surefire-reports/` |
+
+## 5. Running Reports
+
+### 5.1 Generate Allure Report Locally
+
+```bash
+cd test-automation
+mvn test
+mvn allure:report
+open target/allure-report/index.html
 
 ## 4. Trend Data Format
 

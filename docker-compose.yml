@@ -1,13 +1,13 @@
 # docker-compose.yml
-# POS Cloud-Native & Hardware Test Platform - Local Development Environment
-# Wires together all four mock POS services on a local bridge network.
+# Base docker-compose file - core services required for basic operation
+# Usage: docker compose up -d
 
 version: '3.8'
 
 services:
-  # ============================================
-  # Pricing Service - Returns price for SKU
-  # ============================================
+  # ============================================================
+  # Phase 1: Mocked Backend Services (always needed)
+  # ============================================================
   pricing-service:
     build:
       context: ./simulators/pos-services/pricing
@@ -27,13 +27,7 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-    labels:
-      - "service.name=pricing-service"
-      - "service.port=8081"
 
-  # ============================================
-  # Promotions Service - Returns applicable discounts
-  # ============================================
   promotions-service:
     build:
       context: ./simulators/pos-services/promotions
@@ -53,13 +47,7 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-    labels:
-      - "service.name=promotions-service"
-      - "service.port=8082"
 
-  # ============================================
-  # Tax Service - Returns tax for subtotal+region
-  # ============================================
   tax-service:
     build:
       context: ./simulators/pos-services/tax
@@ -79,13 +67,7 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-    labels:
-      - "service.name=tax-service"
-      - "service.port=8083"
 
-  # ============================================
-  # Mock Payment Gateway - Approve/Decline based on test card sentinels
-  # ============================================
   payment-gateway:
     build:
       context: ./simulators/pos-services/payment
@@ -105,17 +87,8 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-    labels:
-      - "service.name=payment-gateway"
-      - "service.port=8084"
 
-# ============================================
-# Networks
-# ============================================
 networks:
   pos-network:
     name: pos-network
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16

@@ -498,6 +498,31 @@ def test_illegal_transition():
             500,
         )
 
+# simulators/pos-services/order-processing/simulator.py
+# Add reset endpoint
+
+
+@app.route("/test/reset", methods=["POST"])
+def reset_state():
+    """Reset order state to initial."""
+    global orders, order_counter, order_history
+
+    orders = {}
+    order_counter = 0
+    order_history = []
+
+    logger.info("Order state reset to initial")
+    return (
+        jsonify(
+            {
+                "status": "reset",
+                "service": "order-processing",
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+            }
+        ),
+        200,
+    )
+
 
 @app.route("/order/test/scenario", methods=["POST"])
 def test_scenario():

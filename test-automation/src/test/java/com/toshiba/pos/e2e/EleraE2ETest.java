@@ -3,11 +3,13 @@
 package com.toshiba.pos.e2e;
 
 import com.toshiba.pos.BaseTest;
+import com.toshiba.pos.FixtureFactory;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 
 import java.util.*;
+import com.toshiba.pos.BasketItem;
 
 import static org.testng.Assert.*;
 import static io.restassured.RestAssured.given;
@@ -25,16 +27,19 @@ import static io.restassured.RestAssured.given;
  */
 public class EleraE2ETest extends BaseTest {
 
+      private FixtureFactory fixtureFactory;
+
     // ELERA simulator URL
     private static String eleraUrl;
 
     // Test data
-    private static final String[] TEST_SKUS = {"SKU-1001", "SKU-1002", "SKU-1005"};
-    private static final String TEST_REGION = "CA";
-    private static final String TEST_CARD = "4111111111111111";
+    //private static final String[] TEST_SKUS = {"SKU-1001", "SKU-1002", "SKU-1005"};
+    //private static final String TEST_REGION = "CA";
+    //private static final String TEST_CARD = "4111111111111111";
 
     @BeforeClass
     public void setUpClass() {
+        fixtureFactory = FixtureFactory.defaultFactory();
         eleraUrl = getEnv("ELERA_SERVICE_URL", "http://localhost:5000");
         logger.info("=== ELERA E2E Test Initialized ===");
         logger.info("  ELERA URL: {}", eleraUrl);
@@ -44,15 +49,20 @@ public class EleraE2ETest extends BaseTest {
     /**
      * Helper: Build a test basket with multiple items.
      */
-    private List<Map<String, Object>> buildTestBasket() {
-        List<Map<String, Object>> items = new ArrayList<>();
-        for (String sku : TEST_SKUS) {
-            Map<String, Object> item = new HashMap<>();
-            item.put("sku", sku);
-            item.put("quantity", 1);
-            items.add(item);
+   private List<Map<String, Object>> buildTestBasket() {
+        List<BasketItem> items = fixtureFactory.getStandardTestBasket();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (BasketItem item : items) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("sku", item.getSku());
+            map.put("quantity", item.getQuantity());
+            result.add(map);
         }
-        return items;
+        return result;
+    }
+
+     private String getTestCard() {
+        return fixtureFactory.getStandardCard();
     }
 
     /**
@@ -63,7 +73,7 @@ public class EleraE2ETest extends BaseTest {
         payload.put("mode", mode);
         payload.put("items", items);
         payload.put("region", region);
-        payload.put("payment", Map.of("card_number", TEST_CARD));
+        payload.put("payment", Map.of("card_number", getTestCard()));
         
         return given()
             .spec(requestSpec)
@@ -82,7 +92,7 @@ public class EleraE2ETest extends BaseTest {
      * When: The transaction is processed in POS mode
      * Then: The transaction completes successfully with a consistent total
      */
-    @Test(description = "ELERA POS Mode — Complete sale with test basket")
+    @Test(description = "ELERA POS Mode — Complete sale with test basket", groups = {"e2e", "smoke", "regression", "product:elera"})
     public void testPosModeTransaction() {
         logger.info("=== ELERA POS Mode Transaction ===");
         
@@ -144,7 +154,7 @@ public class EleraE2ETest extends BaseTest {
      * When: The transaction is processed in Self-Service mode
      * Then: The transaction completes successfully with the same total as POS mode
      */
-    @Test(description = "ELERA Self-Service Mode — Complete sale with test basket")
+    @Test(description = "ELERA Self-Service Mode — Complete sale with test basket", groups = {"e2e", "regression", "product:elera"})
     public void testSelfServiceModeTransaction() {
         logger.info("=== ELERA Self-Service Mode Transaction ===");
         
@@ -217,7 +227,7 @@ public class EleraE2ETest extends BaseTest {
      * When: The totals are compared
      * Then: They are identical (consistent unified-commerce behavior)
      */
-    @Test(description = "ELERA Mode Consistency — Same basket, same total across modes")
+    @Test(description = "ELERA Mode Consistency — Same basket, same total across modes", groups = {"e2e", "regression", "product:elera"})
     public void testModeConsistency() {
         logger.info("=== ELERA Mode Consistency Test ===");
         logger.info("  Validating that the same basket produces the same total in both modes");
@@ -266,7 +276,7 @@ public class EleraE2ETest extends BaseTest {
      * When: The produce recognition endpoint is called
      * Then: A recognized produce item is returned with confidence score
      */
-    @Test(description = "ELERA Produce Recognition Hook — Mock vision recognition")
+    @Test(description = "ELERA Produce Recognition Hook — Mock vision recognition", groups = {"e2e", "regression", "product:elera"})
     public void testProduceRecognition() {
         logger.info("=== ELERA Produce Recognition Test ===");
         

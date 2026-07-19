@@ -115,7 +115,7 @@ public class EleraUiTest {
      * Then: POS-specific toolbar elements are visible
      *       Self-Service elements are hidden
      */
-    @Test(description = "ELERA POS Mode — POS toolbar elements visible")
+    @Test(description = "ELERA POS Mode — POS toolbar elements visible", groups = {"ui", "regression", "product:elera"})
     public void testPosModeElements() {
         logger.info("=== ELERA POS Mode UI Test ===");
 
@@ -157,7 +157,7 @@ public class EleraUiTest {
      * Then: Self-Service-specific toolbar elements are visible
      *       POS elements are hidden
      */
-    @Test(description = "ELERA Self-Service Mode — Self-Service elements visible")
+    @Test(description = "ELERA Self-Service Mode — Self-Service elements visible", groups = {"ui", "regression", "product:elera"})
     public void testSelfServiceModeElements() {
         logger.info("=== ELERA Self-Service Mode UI Test ===");
 
@@ -207,11 +207,13 @@ public class EleraUiTest {
     /**
      * Test: ELERA Mode Difference — POS vs Self-Service differ
      * 
+     * @Test(description = "ELERA Mode Difference — POS vs Self-Service differ", groups = {"ui", "regression", "product:elera"})
+     * 
      * Given: Both POS and Self-Service modes
      * When: The basket screen is rendered in each mode
      * Then: The two modes show different element sets
      */
-    @Test(description = "ELERA Mode Difference — POS vs Self-Service differ")
+    @Test(description = "ELERA Mode Difference — POS vs Self-Service differ", groups = {"ui", "regression", "product:elera"})
     public void testModeDifference() {
         logger.info("=== ELERA Mode Difference UI Test ===");
 
@@ -271,7 +273,7 @@ public class EleraUiTest {
      * When: The basket screen is rendered
      * Then: Peripheral indicators show all enabled peripherals
      */
-    @Test(description = "ELERA Peripheral Indicators — Reflect profile capabilities")
+    @Test(description = "ELERA Peripheral Indicators — Reflect profile capabilities", groups = {"ui", "regression", "product:elera"})
     public void testPeripheralIndicators() {
         logger.info("=== ELERA Peripheral Indicators UI Test ===");
 

@@ -1,6 +1,6 @@
 // test-automation/src/test/java/com/toshiba/pos/api-tests/TaxCalculationTest.java
 
-package com.toshiba.pos.api_tests;
+package com.toshiba.pos.api-tests;
 
 import com.toshiba.pos.BaseTest;
 import io.restassured.response.Response;
@@ -26,22 +26,25 @@ import static io.restassured.RestAssured.given;
  * All tests run against local Phase 1 tax service.
  */
 public class TaxCalculationTest extends BaseTest {
+
+    private FixtureFactory fixtureFactory;
     
     // Test data constants
-    private static final String REGION_CA = "CA";
-    private static final String REGION_OR = "OR";
-    private static final String REGION_TX = "TX";
-    private static final String REGION_NY = "NY";
-    private static final String REGION_INVALID = "XX";
+    //private static final String REGION_CA = "CA";
+    //private static final String REGION_OR = "OR";
+    //private static final String REGION_TX = "TX";
+    //private static final String REGION_NY = "NY";
+    //private static final String REGION_INVALID = "XX";
     
     // Expected tax rates from mock data
-    private static final double TAX_RATE_CA = 0.0725;  // 7.25%
-    private static final double TAX_RATE_OR = 0.0;     // 0% (no sales tax)
-    private static final double TAX_RATE_TX = 0.0625;  // 6.25%
-    private static final double TAX_RATE_NY = 0.04;    // 4.0%
+    //private static final double TAX_RATE_CA = 0.0725;  // 7.25%
+    //private static final double TAX_RATE_OR = 0.0;     // 0% (no sales tax)
+    //private static final double TAX_RATE_TX = 0.0625;  // 6.25%
+    //private static final double TAX_RATE_NY = 0.04;    // 4.0%
     
     @BeforeClass
     public void setUpClass() {
+        fixtureFactory = FixtureFactory.defaultFactory();
         logger.info("=== TaxCalculationTest Initialized ===");
         logger.info("Testing tax boundary cases against: {}", taxServiceUrl);
         logger.info("======================================");
@@ -54,7 +57,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated
      * Then: Tax amount should be $0.00 and total should be $0.00
      */
-    @Test(description = "Zero subtotal returns zero tax")
+    @Test(description = "Zero subtotal returns zero tax", groups = {"api", "regression", "boundary", "product:all"})
     public void testZeroSubtotal() {
         logger.info("Testing zero subtotal...");
         
@@ -90,7 +93,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated
      * Then: The service should return an error (400 Bad Request)
      */
-    @Test(description = "Negative subtotal returns 400 error")
+    @Test(description = "Negative subtotal returns 400 error", groups = {"api", "regression", "negative", "product:all"})
     public void testNegativeSubtotal() {
         logger.info("Testing negative subtotal...");
         
@@ -125,7 +128,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated for each region
      * Then: Each region should return the correct tax rate
      */
-    @Test(description = "Multiple regions return correct tax rates")
+    @Test(description = "Multiple regions return correct tax rates", groups = {"api", "regression", "product:all"})
     public void testMultipleRegions() {
         logger.info("Testing multiple regions...");
         
@@ -180,7 +183,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated
      * Then: The service should return 404 Not Found
      */
-    @Test(description = "Invalid region returns 404")
+    @Test(description = "Invalid region returns 404", groups = {"api", "regression", "negative", "product:all"})
     public void testInvalidRegion() {
         logger.info("Testing invalid region...");
         
@@ -213,12 +216,14 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated with item-level detail
      * Then: Only taxable items should contribute to tax
      */
-    @Test(description = "Tax-exempt items (taxable=false) are excluded from tax")
+    @Test(description = "Tax-exempt items (taxable=false) are excluded from tax", groups = {"api", "regression", "boundary", "product:all"})
     public void testTaxExemptItems() {
+
+        String region = fixtureFactory.getStandardRegion();
         logger.info("Testing tax-exempt items...");
         
         double subtotal = 30.00;
-        String region = REGION_CA;
+        // String region = REGION_CA;
         
         // Create items: first is taxable, second is tax-exempt
         List<Map<String, Object>> items = new ArrayList<>();
@@ -277,7 +282,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated
      * Then: The service should handle it without errors
      */
-    @Test(description = "Large subtotal handles correctly without errors")
+    @Test(description = "Large subtotal handles correctly without errors", groups = {"api", "regression", "boundary", "product:all"})
     public void testLargeSubtotal() {
         logger.info("Testing large subtotal...");
         
@@ -321,7 +326,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: Tax is calculated
      * Then: Tax amount should be rounded to 2 decimal places
      */
-    @Test(description = "Tax amounts are rounded to 2 decimal places")
+    @Test(description = "Tax amounts are rounded to 2 decimal places", groups = {"api", "regression", "boundary", "product:all"})
     public void testDecimalPrecision() {
         logger.info("Testing decimal precision and rounding...");
         
@@ -369,7 +374,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: All regions are requested
      * Then: All configured regions should be returned
      */
-    @Test(description = "Get all tax regions returns expected data")
+    @Test(description = "Get all tax regions returns expected data", groups = {"api", "regression", "product:all"})
     public void testGetAllRegions() {
         logger.info("Testing get all regions endpoint...");
         
@@ -429,7 +434,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: The tax rate is requested
      * Then: The correct rate should be returned
      */
-    @Test(description = "Single region tax rate lookup returns correct rate")
+    @Test(description = "Single region tax rate lookup returns correct rate", groups = {"api", "regression", "product:all"})
     public void testSingleRegionLookup() {
         logger.info("Testing single region lookup...");
         
@@ -468,7 +473,7 @@ public class TaxCalculationTest extends BaseTest {
      * When: The validation endpoint is called
      * Then: All subtotals should be validated correctly
      */
-    @Test(description = "Tax validation endpoint validates multiple subtotals")
+    @Test(description = "Tax validation endpoint validates multiple subtotals", groups = {"api", "regression", "product:all"})
     public void testTaxValidation() {
         logger.info("Testing tax validation endpoint...");
         

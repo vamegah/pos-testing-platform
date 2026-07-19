@@ -3,6 +3,7 @@
 package com.toshiba.pos.api_tests;
 
 import com.toshiba.pos.BaseTest;
+import com.toshiba.pos.FixtureFactory;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
@@ -25,13 +26,15 @@ import static io.restassured.RestAssured.given;
  * All tests run against local Phase 1 mock services.
  */
 public class TransactionAPITest extends BaseTest {
+
+    private FixtureFactory fixtureFactory;
     
     // Test data constants
-    private static final String TEST_SKU = "SKU-1001";
-    private static final String TEST_REGION = "CA";
-    private static final String TEST_MERCHANT = "TEST_MERCHANT_001";
-    private static final String TEST_CARD_APPROVED = "4111111111111111";
-    private static final String TEST_CARD_DECLINED = "4111111111110000";
+    // private static final String TEST_SKU = "SKU-1001";
+    //private static final String TEST_REGION = "CA";
+    //private static final String TEST_MERCHANT = "TEST_MERCHANT_001";
+    //private static final String TEST_CARD_APPROVED = "4111111111111111";
+    //private static final String TEST_CARD_DECLINED = "4111111111110000";
     
     // Hold transaction state for multi-step tests
     private Double itemPrice;
@@ -43,6 +46,7 @@ public class TransactionAPITest extends BaseTest {
     
     @BeforeClass
     public void setUpClass() {
+        fixtureFactory = FixtureFactory.defaultFactory();
         logger.info("=== TransactionAPITest Initialized ===");
         logger.info("Target Services:");
         logger.info("  Pricing:    {}", pricingServiceUrl);
@@ -59,16 +63,20 @@ public class TransactionAPITest extends BaseTest {
      * When: The POS scans the item and processes the transaction
      * Then: The payment is approved and a receipt is generated
      */
-    @Test(description = "Happy path - Complete sale flow with approved payment")
+    @Test(description = "Happy path - Complete sale flow with approved payment", groups = {"smoke", "api", "regression", "product:all"})
     public void testHappyPathTransaction() {
+        String sku = fixtureFactory.getStandardSku();
+        String region = fixtureFactory.getStandardRegion();
+        String card = fixtureFactory.getStandardCard();
+
         logger.info("Starting happy path transaction test...");
         
         // Step 1: Get price for SKU
-        logger.info("Step 1: Price lookup for SKU: {}", TEST_SKU);
+        logger.info("Step 1: Price lookup for SKU: {}", sku);
         Response priceResponse = given()
             .spec(requestSpec)
             .when()
-            .get(pricingServiceUrl + "/price/" + TEST_SKU)
+            .get(pricingServiceUrl + "/price/" + sku)
             .then()
             .statusCode(200)
             .extract()
@@ -84,11 +92,11 @@ public class TransactionAPITest extends BaseTest {
         logger.info("  Subtotal: ${}", subtotal);
         
         // Step 2: Check promotions for the item
-        logger.info("Step 2: Promotion lookup for SKU: {}", TEST_SKU);
+        logger.info("Step 2: Promotion lookup for SKU: {}", sku);
         Response promoResponse = given()
             .spec(requestSpec)
             .when()
-            .get(promotionsServiceUrl + "/promotions/sku/" + TEST_SKU)
+            .get(promotionsServiceUrl + "/promotions/sku/" + sku)
             .then()
             .statusCode(200)
             .extract()
@@ -98,10 +106,10 @@ public class TransactionAPITest extends BaseTest {
         logger.info("  Found {} promotion(s)", appliedPromotions != null ? appliedPromotions.size() : 0);
         
         // Step 3: Calculate tax (simple - use subtotal)
-        logger.info("Step 3: Tax calculation for region: {}", TEST_REGION);
+        logger.info("Step 3: Tax calculation for region: {}", region);
         Map<String, Object> taxRequest = new HashMap<>();
         taxRequest.put("subtotal", subtotal);
-        taxRequest.put("region", TEST_REGION);
+        taxRequest.put("region", region);
         
         Response taxResponse = given()
             .spec(requestSpec)
@@ -185,15 +193,19 @@ public class TransactionAPITest extends BaseTest {
      * When: The POS processes the payment
      * Then: The payment is declined with an appropriate reason
      */
-    @Test(description = "Declined payment - Card ending in 0000 should be declined")
+    @Test(description = "Declined payment - Card ending in 0000 should be declined", groups = {"api", "regression", "negative", "product:all"})
     public void testDeclinedPaymentTransaction() {
+        String sku = fixtureFactory.getStandardSku();
+        String region = fixtureFactory.getStandardRegion();
+        String card = fixtureFactory.getDeclinedCard();
+
         logger.info("Starting declined payment transaction test...");
         
         // Step 1: Price lookup (reuse SKU-1001)
         Response priceResponse = given()
             .spec(requestSpec)
             .when()
-            .get(pricingServiceUrl + "/price/" + TEST_SKU)
+            .get(pricingServiceUrl + "/price/" + sku)
             .then()
             .statusCode(200)
             .extract()
@@ -205,7 +217,7 @@ public class TransactionAPITest extends BaseTest {
         // Step 2: Calculate tax for simplicity (no promotions for this test)
         Map<String, Object> taxRequest = new HashMap<>();
         taxRequest.put("subtotal", price);
-        taxRequest.put("region", TEST_REGION);
+        taxRequest.put("region", region);
         
         Response taxResponse = given()
             .spec(requestSpec)
@@ -224,7 +236,7 @@ public class TransactionAPITest extends BaseTest {
         Map<String, Object> paymentRequest = new HashMap<>();
         paymentRequest.put("amount", totalWithTax);
         paymentRequest.put("currency", "USD");
-        paymentRequest.put("card_number", TEST_CARD_DECLINED);
+        paymentRequest.put("card_number", card);
         paymentRequest.put("card_expiry", "12/25");
         paymentRequest.put("cvv", "123");
         paymentRequest.put("merchant_id", TEST_MERCHANT);
@@ -259,8 +271,11 @@ public class TransactionAPITest extends BaseTest {
      * When: The POS processes the transaction
      * Then: The total reflects all items with correct pricing and tax
      */
-    @Test(description = "Multi-item transaction with multiple SKUs")
+    @Test(description = "Multi-item transaction with multiple SKUs", groups = {"api", "regression", "product:all"})
     public void testMultiItemTransaction() {
+          List<String> skus = Arrays.asList("SKU-1001", "SKU-1002", "SKU-1005");
+        List<BasketItem> items = fixtureFactory.generateBasket(skus);
+
         logger.info("Starting multi-item transaction test...");
         
         List<String> skus = Arrays.asList("SKU-1001", "SKU-1002", "SKU-1005");
@@ -375,7 +390,7 @@ public class TransactionAPITest extends BaseTest {
      * When: The POS looks up the price
      * Then: A 404 error is returned
      */
-    @Test(description = "Invalid SKU returns 404")
+    @Test(description = "Invalid SKU returns 404", groups = {"api", "regression", "negative", "product:all"})
     public void testInvalidSku() {
         logger.info("Starting invalid SKU test...");
         

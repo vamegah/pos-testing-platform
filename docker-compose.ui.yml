@@ -1,0 +1,29 @@
+# docker-compose.ui.yml
+# UI overlay - adds UI harness
+# Usage: docker compose -f docker-compose.yml -f docker-compose.ui.yml up -d
+
+version: '3.8'
+
+services:
+  # ============================================================
+  # Phase 15: Kiosk UI Harness
+  # ============================================================
+  kiosk-ui:
+    build:
+      context: ./simulators/kiosk-ui-harness
+      dockerfile: Dockerfile
+    container_name: kiosk-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped

@@ -1,0 +1,200 @@
+# docker-compose.architecture.yml
+# Architecture overlay - adds all architecture components
+# Usage: docker compose -f docker-compose.yml -f docker-compose.api.yml -f docker-compose.architecture.yml up -d
+
+version: '3.8'
+
+services:
+  # ============================================================
+  # Phase 23: Hardware Components
+  # ============================================================
+  card-reader:
+    build:
+      context: ./hardware-emulation/card-reader
+      dockerfile: Dockerfile
+    container_name: card-reader
+    ports:
+      - "5009:5009"
+    environment:
+      - PORT=5009
+      - DEBUG=${DEBUG:-false}
+      - PAYMENT_GATEWAY_URL=http://payment-gateway:8084
+    networks:
+      - pos-network
+    depends_on:
+      - payment-gateway
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5009/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  cash-drawer:
+    build:
+      context: ./hardware-emulation/cash-drawer
+      dockerfile: Dockerfile
+    container_name: cash-drawer
+    ports:
+      - "5010:5010"
+    environment:
+      - PORT=5010
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  hardware-station:
+    build:
+      context: ./simulators/hardware-station
+      dockerfile: Dockerfile
+    container_name: hardware-station
+    ports:
+      - "5011:5011"
+    environment:
+      - PORT=5011
+      - DEBUG=${DEBUG:-false}
+      - PRINTER_URL=http://tcx-printer-single:5007
+      - CASH_DRAWER_URL=http://cash-drawer:5010
+      - SCANNER_URL=http://mxp-smart-wall:5003
+      - CARD_READER_URL=http://card-reader:5009
+    networks:
+      - pos-network
+    depends_on:
+      - card-reader
+      - cash-drawer
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5011/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  commerce-scale-unit:
+    build:
+      context: ./simulators/commerce-scale-unit
+      dockerfile: Dockerfile
+    container_name: commerce-scale-unit
+    ports:
+      - "5012:5012"
+    environment:
+      - PORT=5012
+      - DEBUG=${DEBUG:-false}
+      - PRICING_SERVICE_URL=http://pricing-service:8081
+      - PROMOTIONS_SERVICE_URL=http://promotions-service:8082
+      - TAX_SERVICE_URL=http://tax-service:8083
+    networks:
+      - pos-network
+    depends_on:
+      - pricing-service
+      - promotions-service
+      - tax-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5012/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  local-data-cache:
+    build:
+      context: ./simulators/local-data-cache
+      dockerfile: Dockerfile
+    container_name: local-data-cache
+    ports:
+      - "5013:5013"
+    environment:
+      - PORT=5013
+      - DEBUG=${DEBUG:-false}
+    networks:
+      - pos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5013/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # ============================================================
+  # Phase 23: Third-Party Mocks
+  # ============================================================
+  loyalty:
+    build:
+      context: ./simulators/third-party-mocks/loyalty
+      dockerfile: Dockerfile
+    container_name: loyalty
+    ports:
+      - "8089:8089"
+    environment:
+      - PORT=8089
+      - DEBUG=${DEBUG:-false}
+      - CRM_URL=http://crm:8087
+      - GATEWAY_URL=http://api-gateway:5014
+    networks:
+      - pos-network
+    depends_on:
+      - api-gateway
+      - crm
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8089/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  erp:
+    build:
+      context: ./simulators/third-party-mocks/erp
+      dockerfile: Dockerfile
+    container_name: erp
+    ports:
+      - "8090:8090"
+    environment:
+      - PORT=8090
+      - DEBUG=${DEBUG:-false}
+      - GATEWAY_URL=http://api-gateway:5014
+    networks:
+      - pos-network
+    depends_on:
+      - api-gateway
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  data-services:
+    build:
+      context: ./simulators/data-services
+      dockerfile: Dockerfile
+    container_name: data-services
+    ports:
+      - "8088:8088"
+    environment:
+      - PORT=8088
+      - DEBUG=${DEBUG:-false}
+      - GATEWAY_URL=http://api-gateway:5014
+    networks:
+      - pos-network
+    depends_on:
+      - api-gateway
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped

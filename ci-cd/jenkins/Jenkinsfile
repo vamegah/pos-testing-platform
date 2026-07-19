@@ -63,6 +63,19 @@ pipeline {
             defaultValue: false,
             description: 'Run diagnostic tests (nightly only)'
         )
+        booleanParam(
+            name: 'SKIP_RESET',
+            defaultValue: false,
+            description: 'Skip test state reset (services already clean)'
+        )
+        // ci-cd/Jenkinsfile
+        // Add parameter
+
+        booleanParam(
+            name: 'SKIP_SMOKE_TEST',
+            defaultValue: false,
+            description: 'Skip environment smoke-test (services already running)'
+        )
     }
 
     // ============================================================
@@ -83,6 +96,52 @@ pipeline {
     // ============================================================
     // Stages
     // ============================================================
+
+    // ci-cd/Jenkinsfile
+    // Add reset step before tests
+    // ci-cd/Jenkinsfile
+// Add environment smoke-test as the first stage
+
+    stage('Environment Smoke-Test') {
+        when {
+            expression { !params.SKIP_SMOKE_TEST }
+        }
+        steps {
+            echo '🌡️ Running environment smoke-test...'
+            
+            script {
+                // Determine profile based on test type
+                def profile = 'full'
+                if (params.TEST_PROFILE == 'api' || params.DEPLOY_MODE == 'api-only') {
+                    profile = 'api'
+                } else if (params.TEST_PROFILE == 'ui') {
+                    profile = 'ui'
+                } else if (params.TEST_PROFILE == 'architecture') {
+                    profile = 'architecture'
+                }
+                
+                // Make script executable
+                sh 'chmod +x scripts/smoke_test_env.sh'
+                
+                // Run smoke-test
+                sh "./scripts/smoke_test_env.sh ${profile}"
+            }
+            
+            echo '✅ Environment smoke-test passed'
+        }
+    }
+
+    stage('Reset Test State') {
+        when {
+            expression { !params.SKIP_RESET }
+        }
+        steps {
+            echo '🔄 Resetting test state...'
+            sh 'chmod +x scripts/reset_test_state.sh'
+            sh './scripts/reset_test_state.sh'
+            echo '✅ Test state reset complete'
+        }
+    }
     stages {
         stage('Setup') {
             steps {
@@ -384,6 +443,38 @@ stage('Flaky Tests (Quarantine)') {
                         echo '✅ E2E tests complete'
                     }
                 }
+                // ci-cd/Jenkinsfile
+                // Update the offline test to use Java version only
+
+                stage('Run Offline Sync Test') {
+                    when {
+                        expression { params.PERFORMANCE_TEST != 'none' }
+                    }
+                    steps {
+                        echo '📡 Running offline sync test...'
+                        
+                        script {
+                            // Use the Java version (authoritative)
+                            dir('test-automation') {
+                                sh """
+                                    mvn test -Dtest=OfflineSyncTest \
+                                        -DPRICING_SERVICE_URL=${env.PRICING_URL} \
+                                        -DPROMOTIONS_SERVICE_URL=${env.PROMOTIONS_URL} \
+                                        -DTAX_SERVICE_URL=${env.TAX_URL} \
+                                        -DPAYMENT_GATEWAY_URL=${env.PAYMENT_URL}
+                                """
+                            }
+                            
+                            // Python script is manual-only, not run in CI
+                            sh """
+                                echo "⚠️ offline_sync_test.py is manual-only. Using Java test instead."
+                                cp -r test-automation/target/surefire-reports/*.xml ${RESULTS_DIR}/offline/ || true
+                            """
+                        }
+                        
+                        echo '✅ Offline sync test complete'
+                    }
+                }
 
                 stage('UI Tests') {
                     when {
@@ -483,65 +574,95 @@ stage('Flaky Tests (Quarantine)') {
         // ============================================================
         // Publish Reports (Common)
         // ============================================================
-        stage('Publish Reports') {
-            when {
-                expression { params.PIPELINE_MODE != 'pr' }
+        // ci-cd/Jenkinsfile
+// Update reporting section
+
+stage('Publish Reports') {
+    steps {
+        echo '📊 Publishing test reports...'
+        
+        script {
+            // Generate Allure report
+            dir('test-automation') {
+                sh 'mvn allure:report'
             }
-            steps {
-                script {
-                    def mode = params.PIPELINE_MODE
-                    def modeLabel = mode == 'pr' ? 'PR Smoke' : mode == 'nightly' ? 'Nightly Regression' : 'Full'
-                    
-                    sh """
-                        cat > ${RESULTS_DIR}/reports/index.html << 'EOF'
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>POS Test Platform - ${modeLabel} Report</title>
-                            <style>
-                                body { font-family: Arial, sans-serif; margin: 20px; }
-                                h1 { color: #333; }
-                                h2 { color: #555; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-                                .success { color: green; }
-                                .failure { color: red; }
-                                .summary { background: #f5f5f5; padding: 15px; border-radius: 5px; }
-                            </style>
-                        </head>
-                        <body>
-                            <h1>📊 POS Test Platform - ${modeLabel} Report</h1>
-                            <div class="summary">
-                                <p><strong>Build:</strong> ${BUILD_NUMBER}</p>
-                                <p><strong>Date:</strong> ${BUILD_TIMESTAMP}</p>
-                                <p><strong>Mode:</strong> ${modeLabel}</p>
-                                <p><strong>Product:</strong> ${params.PRODUCT_PROFILE}</p>
-                            </div>
-                            <h2>${currentBuild.currentResult == 'SUCCESS' ? '✅ Pipeline Status: SUCCESS' : '❌ Pipeline Status: FAILED'}</h2>
-                            <div>
-                                <h3>📁 Test Results</h3>
-                                <ul>
-                                    <li><a href="../api/TEST-TestSuite.html">API Test Results</a></li>
-                                    <li><a href="../e2e/TEST-TestSuite.html">E2E Test Results</a></li>
-                                    <li><a href="../ui/TEST-TestSuite.html">UI Test Results</a></li>
-                                    <li><a href="../perf/report/index.html">Performance Test Report</a></li>
-                                </ul>
-                            </div>
-                        </body>
-                        </html>
-                        EOF
-                    """
-                    
-                    publishHTML([
-                        reportDir: "${RESULTS_DIR}/reports",
-                        reportFiles: 'index.html',
-                        reportName: "${modeLabel} Test Report"
-                    ])
-                    
-                    archiveArtifacts artifacts: "${RESULTS_DIR}/**/*", allowEmptyArchive: true
-                }
-                
-                echo '✅ Reports published'
-            }
+            
+            // Publish Allure report
+            allure([
+                includeProperties: false,
+                jdk: '',
+                properties: [],
+                reportBuildPolicy: 'ALWAYS',
+                results: [[path: 'test-automation/target/allure-results']]
+            ])
+            
+            // Also archive artifacts
+            archiveArtifacts artifacts: 'test-automation/target/allure-report/**/*', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'test-automation/target/surefire-reports/*.xml', allowEmptyArchive: true
         }
+        
+        echo '✅ Reports published'
+    }
+}
+        // stage('Publish Reports') {
+        //     when {
+        //         expression { params.PIPELINE_MODE != 'pr' }
+        //     }
+        //     steps {
+        //         script {
+        //             def mode = params.PIPELINE_MODE
+        //             def modeLabel = mode == 'pr' ? 'PR Smoke' : mode == 'nightly' ? 'Nightly Regression' : 'Full'
+                    
+        //             sh """
+        //                 cat > ${RESULTS_DIR}/reports/index.html << 'EOF'
+        //                 <!DOCTYPE html>
+        //                 <html>
+        //                 <head>
+        //                     <title>POS Test Platform - ${modeLabel} Report</title>
+        //                     <style>
+        //                         body { font-family: Arial, sans-serif; margin: 20px; }
+        //                         h1 { color: #333; }
+        //                         h2 { color: #555; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        //                         .success { color: green; }
+        //                         .failure { color: red; }
+        //                         .summary { background: #f5f5f5; padding: 15px; border-radius: 5px; }
+        //                     </style>
+        //                 </head>
+        //                 <body>
+        //                     <h1>📊 POS Test Platform - ${modeLabel} Report</h1>
+        //                     <div class="summary">
+        //                         <p><strong>Build:</strong> ${BUILD_NUMBER}</p>
+        //                         <p><strong>Date:</strong> ${BUILD_TIMESTAMP}</p>
+        //                         <p><strong>Mode:</strong> ${modeLabel}</p>
+        //                         <p><strong>Product:</strong> ${params.PRODUCT_PROFILE}</p>
+        //                     </div>
+        //                     <h2>${currentBuild.currentResult == 'SUCCESS' ? '✅ Pipeline Status: SUCCESS' : '❌ Pipeline Status: FAILED'}</h2>
+        //                     <div>
+        //                         <h3>📁 Test Results</h3>
+        //                         <ul>
+        //                             <li><a href="../api/TEST-TestSuite.html">API Test Results</a></li>
+        //                             <li><a href="../e2e/TEST-TestSuite.html">E2E Test Results</a></li>
+        //                             <li><a href="../ui/TEST-TestSuite.html">UI Test Results</a></li>
+        //                             <li><a href="../perf/report/index.html">Performance Test Report</a></li>
+        //                         </ul>
+        //                     </div>
+        //                 </body>
+        //                 </html>
+        //                 EOF
+        //             """
+                    
+        //             publishHTML([
+        //                 reportDir: "${RESULTS_DIR}/reports",
+        //                 reportFiles: 'index.html',
+        //                 reportName: "${modeLabel} Test Report"
+        //             ])
+                    
+        //             archiveArtifacts artifacts: "${RESULTS_DIR}/**/*", allowEmptyArchive: true
+        //         }
+                
+        //         echo '✅ Reports published'
+        //     }
+        // }
         // ci-cd/Jenkinsfile (add to the Publish Reports stage)
 
 // ============================================================

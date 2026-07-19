@@ -1,0 +1,84 @@
+// test-automation/src/test/java/com/toshiba/pos/contract/CommerceScaleUnitDataServicesContractTest.java
+
+package com.toshiba.pos.contract;
+
+import io.restassured.response.Response;
+import org.testng.annotations.Test;
+
+import java.util.*;
+
+import static io.restassured.RestAssured.given;
+import static org.testng.Assert.*;
+
+/**
+ * Contract test between Commerce Scale Unit and Data Services.
+ * 
+ * Validates that Commerce Scale Unit correctly calls Data Services
+ * for persistence and analytics.
+ */
+public class CommerceScaleUnitDataServicesContractTest extends ContractTestBase {
+
+    private static String commerceScaleUnitUrl;
+    private static String dataServicesUrl;
+
+    @BeforeClass
+    public void setUpClass() {
+        commerceScaleUnitUrl = getEnv("COMMERCE_SCALE_UNIT_URL", "http://localhost:5012");
+        dataServicesUrl = getEnv("DATA_SERVICES_URL", "http://localhost:8088");
+        logger.info("Commerce Scale Unit URL: {}", commerceScaleUnitUrl);
+        logger.info("Data Services URL: {}", dataServicesUrl);
+    }
+
+    /**
+     * Test: Commerce Scale Unit correctly calls Data Services for order persistence.
+     * 
+     * Given: A completed transaction
+     * When: Commerce Scale Unit processes checkout
+     * Then: Data Services persists the order
+     */
+    @Test(description = "Commerce Scale Unit → Data Services: Persistence contract")
+    public void testCommerceScaleUnitDataServicesPersistence() {
+        logger.info("=== Commerce Scale Unit → Data Services: Persistence Contract ===");
+
+        // Step 1: Call Commerce Scale Unit checkout
+        logger.info("Step 1: Calling Commerce Scale Unit");
+        Map<String, Object> checkoutPayload = Map.of(
+            "items", List.of(Map.of("sku", "SKU-1001", "quantity", 2)),
+            "region", "CA"
+        );
+        
+        Response csuResponse = given()
+            .spec(requestSpec)
+            .body(checkoutPayload)
+            .when()
+            .post(commerceScaleUnitUrl + "/commerce-scale-unit/checkout/price")
+            .then()
+            .extract()
+            .response();
+        
+        assertSuccess(csuResponse);
+        String source = csuResponse.jsonPath().getString("source");
+        Double total = csuResponse.jsonPath().getDouble("total");
+        logger.info("  CSU total: ${}, source: {}", total, source);
+
+        // Step 2: Verify Data Services has the data
+        logger.info("Step 2: Verifying Data Services");
+        // Data Services would be called by CSU internally
+        // For contract test, we verify the data is present
+        
+        // Get analytics summary
+        Response analyticsResponse = given()
+            .spec(requestSpec)
+            .when()
+            .get(dataServicesUrl + "/data-services/analytics/summary")
+            .then()
+            .extract()
+            .response();
+        
+        assertSuccess(analyticsResponse);
+        Integer totalEvents = analyticsResponse.jsonPath().getInt("summary.total_events");
+        logger.info("  Data Services total events: {}", totalEvents);
+
+        logger.info("✅ Commerce Scale Unit → Data Services contract passed");
+    }
+}

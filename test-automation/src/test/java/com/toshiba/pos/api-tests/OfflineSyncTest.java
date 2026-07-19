@@ -289,7 +289,7 @@ public class OfflineSyncTest extends BaseTest {
      * When: Network is restored
      * Then: Queued transactions are synced successfully
      */
-    @Test(description = "Store-and-forward: Network interruption during transaction")
+    @Test(description = "Store-and-forward: Network interruption during transaction", groups = {"e2e", "regression", "product:all"})
     public void testStoreAndForward() {
         logger.info("=== Starting Store-and-Forward Test ===");
         
@@ -361,7 +361,7 @@ public class OfflineSyncTest extends BaseTest {
      * When: Multiple transactions are queued
      * Then: They maintain order and are synced in the same order
      */
-    @Test(description = "Offline queue maintains order during sync")
+    @Test(description = "Offline queue maintains order during sync", groups = {"e2e", "regression", "product:all"})
     public void testQueueOrderPreservation() {
         logger.info("=== Starting Queue Order Test ===");
         
@@ -412,7 +412,7 @@ public class OfflineSyncTest extends BaseTest {
      * When: Sync fails for some reason
      * Then: Failed transactions remain in the queue for retry
      */
-    @Test(description = "Sync failures are handled gracefully with retry")
+    @Test(description = "Sync failures are handled gracefully with retry", groups = {"e2e", "regression", "negative", "product:all"})
     public void testSyncFailureHandling() {
         logger.info("=== Starting Sync Failure Handling Test ===");
         
